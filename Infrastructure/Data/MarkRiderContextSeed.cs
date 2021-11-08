@@ -139,7 +139,7 @@ namespace Infrastructure.Data
         {
             var file = new []
             {
-                new FileData{Name = "single delivery", URL = "drink.jpeg"}
+                new FileData{Name = "single delivery", URL = "images/products/drink.jpeg"}
             };
             await context.FileDatas.AddRangeAsync(file);
             await context.SaveChangesAsync();
@@ -157,13 +157,13 @@ namespace Infrastructure.Data
         {
             var deliveryDistance = new []
             {
-                new DeliveryDistance{Distance = 15, Amount = 1000},
-                new DeliveryDistance{Distance =25, Amount = 1500},
-                new DeliveryDistance{Distance = 30, Amount = 2000},
-                new DeliveryDistance{Distance = 40, Amount = 2500},
-                new DeliveryDistance{Distance = 50, Amount = 3000},
-                new DeliveryDistance{Distance = 60, Amount = 3500},
-                new DeliveryDistance{Distance = 61, Amount = 5000}
+                new DeliveryDistance{Distance = 20, Amount = 1000},
+                new DeliveryDistance{Distance = 30, Amount = 1200},
+                new DeliveryDistance{Distance = 35, Amount = 1500},
+                new DeliveryDistance{Distance = 45, Amount = 2000},
+                new DeliveryDistance{Distance = 60, Amount = 2500},
+                new DeliveryDistance{Distance = 65, Amount = 3000},
+                new DeliveryDistance{Distance = 70, Amount = 4000}
             };
             context.DeliveryDistances.AddRange(deliveryDistance);
              await context.SaveChangesAsync();

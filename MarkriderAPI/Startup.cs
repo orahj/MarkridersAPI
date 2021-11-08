@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
+using MarkriderAPI.Helpers;
+
 namespace MarkriderAPI
 {
     public class Startup
@@ -32,6 +34,8 @@ namespace MarkriderAPI
             services.AddControllers().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddScoped<IDeliveryRepository,DeliveryRepository>();
+            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+            services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
              services.AddDbContext<MarkRiderContext>(x => 
                 x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
@@ -54,6 +58,7 @@ namespace MarkriderAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseStaticFiles();
 
             app.UseAuthorization();
 
