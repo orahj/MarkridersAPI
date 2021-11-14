@@ -1,12 +1,13 @@
+using System.Runtime.Serialization;
 using Core.Entities;
 
 namespace Core.Enum
 {
     public enum Gender
     {
-        [CustomEnumDescription("Male")]
+       [EnumMember(Value = "Male")]
         Male,
-        [CustomEnumDescription("Female")]
+      [EnumMember(Value = "Female")]
         Female
     }
 }

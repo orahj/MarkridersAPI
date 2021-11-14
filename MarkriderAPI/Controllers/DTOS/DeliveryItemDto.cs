@@ -18,10 +18,13 @@ namespace MarkriderAPI.Controllers.DTOS
         public string DropOffPhone { get; set; }
         public DateTime DateCreated {get; set;}
         public string FileURL{get;set;}
-        public string Address { get; set; }
-        public double Logitude { get; set; }
-        public double Latitude { get; set; }
+         public string BaseAddress { get; set; }
+        public double XLogitude { get; set; }
+        public double XLatitude { get; set; }
         public double DeliveryDistance { get; set; }
+         public double YLogitude { get; set; }
+        public double YLatitude { get; set; }
+        public string TargetAddress { get; set; }
 
     }
 }

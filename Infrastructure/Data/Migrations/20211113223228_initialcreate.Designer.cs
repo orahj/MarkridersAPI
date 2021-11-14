@@ -9,68 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Data.Migrations
 {
     [DbContext(typeof(MarkRiderContext))]
-    [Migration("20211107120226_initialcreate")]
+    [Migration("20211113223228_initialcreate")]
     partial class initialcreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.2");
-
-            modelBuilder.Entity("Core.Entities.AppUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Address")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Avatar")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("DateRegistered")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("FirstName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<byte[]>("PasswordHash")
-                        .HasColumnType("BLOB");
-
-                    b.Property<byte[]>("PasswordSalt")
-                        .HasColumnType("BLOB");
-
-                    b.Property<string>("StateId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserTypes")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.HasIndex("StateId");
-
-                    b.ToTable("AppUsers");
-                });
+                .HasAnnotation("ProductVersion", "5.0.3");
 
             modelBuilder.Entity("Core.Entities.Country", b =>
                 {
@@ -92,10 +38,7 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DeliveryNo")
@@ -103,12 +46,14 @@ namespace Infrastructure.Data.Migrations
                         .HasMaxLength(15)
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppUserId");
 
                     b.ToTable("Deliveries");
                 });
@@ -119,8 +64,8 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Amount")
+                        .HasColumnType("REAL");
 
                     b.Property<int>("Distance")
                         .HasColumnType("INTEGER");
@@ -136,32 +81,33 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Carriers")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<string>("Carriers")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("DeliveryAmount")
+                    b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DeliveryDate")
+                    b.Property<double>("DeliveryAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset>("DeliveryDate")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("DeliveryId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DeliveryLocationId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DeliveryStatus")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("DeliveryStatus")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DeliveryTime")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("DeliveryTime")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DeliveryTpe")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DeliveryTpe")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DropOffPhone")
                         .HasColumnType("TEXT");
@@ -179,8 +125,6 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("DeliveryId");
 
-                    b.HasIndex("DeliveryLocationId");
-
                     b.HasIndex("FileDataId");
 
                     b.ToTable("DeliveryItems");
@@ -192,7 +136,7 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Address")
+                    b.Property<string>("BaseAddress")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DateCreated")
@@ -201,13 +145,27 @@ namespace Infrastructure.Data.Migrations
                     b.Property<double>("DeliveryDistance")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("Latitude")
+                    b.Property<int>("DeliveryItemId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("TargetAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("XLatitude")
                         .HasColumnType("REAL");
 
-                    b.Property<double>("Logitude")
+                    b.Property<double>("XLogitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("YLatitude")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("YLogitude")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeliveryItemId");
 
                     b.ToTable("DeliveryLocations");
                 });
@@ -229,14 +187,116 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("FileDatas");
                 });
 
+            modelBuilder.Entity("Core.Entities.Identity.AppUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("DateRegistered")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StateId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserTypes")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryId");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("StateId");
+
+                    b.ToTable("AspNetUsers");
+                });
+
             modelBuilder.Entity("Core.Entities.Notification", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DataJson")
                         .HasColumnType("TEXT");
@@ -263,8 +323,9 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("TEXT");
@@ -308,8 +369,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("AccountNumber")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("BVN")
                         .HasColumnType("TEXT");
@@ -395,8 +457,8 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("Amount")
+                        .HasColumnType("REAL");
 
                     b.Property<decimal?>("AmountWithCharge")
                         .HasColumnType("TEXT");
@@ -420,17 +482,18 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AppUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Balance")
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Balance")
+                        .HasColumnType("REAL");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("LastSpend")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("LastSpend")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
@@ -439,7 +502,165 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Wallets");
                 });
 
-            modelBuilder.Entity("Core.Entities.AppUser", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex");
+
+                    b.ToTable("AspNetRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("Core.Entities.DeliveryItem", b =>
+                {
+                    b.HasOne("Core.Entities.Delivery", "Delivery")
+                        .WithMany("DeliveryItems")
+                        .HasForeignKey("DeliveryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.FileData", "FileData")
+                        .WithMany()
+                        .HasForeignKey("FileDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Delivery");
+
+                    b.Navigation("FileData");
+                });
+
+            modelBuilder.Entity("Core.Entities.DeliveryLocation", b =>
+                {
+                    b.HasOne("Core.Entities.DeliveryItem", "DeliveryItem")
+                        .WithMany()
+                        .HasForeignKey("DeliveryItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DeliveryItem");
+                });
+
+            modelBuilder.Entity("Core.Entities.Identity.AppUser", b =>
                 {
                     b.HasOne("Core.Entities.Country", "Country")
                         .WithMany()
@@ -456,47 +677,9 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("Core.Entities.Delivery", b =>
-                {
-                    b.HasOne("Core.Entities.AppUser", "AppUser")
-                        .WithMany()
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AppUser");
-                });
-
-            modelBuilder.Entity("Core.Entities.DeliveryItem", b =>
-                {
-                    b.HasOne("Core.Entities.Delivery", "Delivery")
-                        .WithMany("DeliveryItems")
-                        .HasForeignKey("DeliveryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Entities.DeliveryLocation", "DeliveryLocation")
-                        .WithMany()
-                        .HasForeignKey("DeliveryLocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Core.Entities.FileData", "FileData")
-                        .WithMany()
-                        .HasForeignKey("FileDataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Delivery");
-
-                    b.Navigation("DeliveryLocation");
-
-                    b.Navigation("FileData");
-                });
-
             modelBuilder.Entity("Core.Entities.Notification", b =>
                 {
-                    b.HasOne("Core.Entities.AppUser", "AppUser")
+                    b.HasOne("Core.Entities.Identity.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -507,7 +690,7 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Core.Entities.Payment", b =>
                 {
-                    b.HasOne("Core.Entities.AppUser", "AppUser")
+                    b.HasOne("Core.Entities.Identity.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -524,7 +707,7 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Core.Entities.Rider", b =>
                 {
-                    b.HasOne("Core.Entities.AppUser", "AppUser")
+                    b.HasOne("Core.Entities.Identity.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -576,13 +759,64 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Core.Entities.Wallet", b =>
                 {
-                    b.HasOne("Core.Entities.AppUser", "AppUser")
+                    b.HasOne("Core.Entities.Identity.AppUser", "AppUser")
                         .WithMany()
                         .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.HasOne("Core.Entities.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.HasOne("Core.Entities.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.HasOne("Core.Entities.Identity.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Entities.Delivery", b =>

@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Enum;
+using Core.Entities.Identity;
+using System.ComponentModel.DataAnnotations;
+
 namespace Core.Entities
 {
     public class Payment : BaseEntity
     {
-        public int AppUserId { get; set; }
+        [Required]
+        public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public string SerialNumber { get; set; }

@@ -2,108 +2,125 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.DTOs;
+using Core.DTOs.Delivery;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
 using MarkriderAPI.Controllers.DTOS;
+using MarkriderAPI.Controllers.errors;
+using MarkriderAPI.Extensions;
+using MarkriderAPI.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace MarkriderAPI.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class DeliveryController : ControllerBase
+   [Authorize]
+    public class DeliveryController : BaseAPiController
     {
-        private readonly IGenericRepository<Delivery> _deliveryRepo;
-        private readonly IGenericRepository<DeliveryDistance> _deliveryDistanceRepo;
-        private readonly IGenericRepository<DeliveryItem> _deliveryItemRepo;
-        private readonly IGenericRepository<DeliveryLocation> _deliveryLocationRepo;
         private readonly IMapper _mapper;
+        private readonly IDeliveryRepository _repo;
 
-        public DeliveryController(IGenericRepository<Delivery> deliveryRepo,IGenericRepository<DeliveryDistance> deliveryDistanceRepo,
-        IGenericRepository<DeliveryItem> deliveryItemRepo, IGenericRepository<DeliveryLocation> deliveryLocationRepo,IMapper mapper)
+        public DeliveryController(IMapper mapper, IDeliveryRepository repo)
         {
             _mapper = mapper;
-            _deliveryLocationRepo = deliveryLocationRepo;
-            _deliveryItemRepo = deliveryItemRepo;
-            _deliveryDistanceRepo = deliveryDistanceRepo;
-            _deliveryRepo = deliveryRepo;
-            
+            _repo = repo;
         }
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<DeliveryDto>>> GetDeliveries()
+        public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveries(string sort, string email,[FromQuery] SpecParams specParams)
         {
-           var spec = new DeliverySpecification();
-
-           var res = await _deliveryRepo.ListAsync(spec);
-            // return res.Select(res => new DeliveryDto
-            // {
-            //    DeliveryNo = res.DeliveryNo,
-            //    AppUserId = res.AppUserId,
-            //    TotalAmount = res.TotalAmount,
-            //    DateCreated = res.DateCreated,
-            //    UserName = res.AppUser.UserName,
-            //    FirstName = res.AppUser.FirstName,
-            //    LastName = res.AppUser.LastName,
-            //    Address = res.AppUser.Address,
-            //    Avatar = res.AppUser.Avatar
-            // }).ToList();
-           return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDto>>(res));
+           var res = await _repo.GetDeliveryAsync();
+           //var totalItem = await _repo.GetCountAsync(sort,email,specParams);
+           //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
+           return Ok(res);
         }
 
          [HttpGet("{id}")]
-        public async Task<ActionResult<DeliveryDto>> GetDeliveryByID(int id)
+         [ProducesResponseType(StatusCodes.Status200OK)]
+         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
+
+        public async Task<ActionResult<Delivery>> GetDeliveryByID(int id)
         {
-           var spec = new DeliverySpecification(id);
-
-           var res = await _deliveryRepo.GetEntityWithSpec(spec);
-
-           return _mapper.Map<Delivery,DeliveryDto>(res);
+           var res = await _repo.GetDeliveryByIdAsync(id);
+           if(res == null) return NotFound(new ApiResponse(404));
+           return res;
+        }
+         [HttpGet("get-delivery-by-email")]
+        public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveriesByEmail()
+        {
+          var email = HttpContext.User.RetrieveEmailFromPrincipal();
+           var res = await _repo.GetDeliveryByEmailAsync(email);
+         //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
+           //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
+           return Ok(res);
+        }
+         [HttpGet("get-delivery-by-shipment/{shipmentNo}")]
+        public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveriesNoEmail(string num)
+        {
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+           var res = await _repo.GetDeliveryByDeliveryNoAsync(email,num);
+         //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
+           //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
+           return Ok(res);
         }
         [HttpGet("delivery-items")]
-        public async Task<ActionResult<IReadOnlyList<DeliveryItemDto>>> GetDeliveryItems()
+        public async Task<ActionResult<IReadOnlyList<DeliveryItem>>> GetDeliveryItems()
         {
-            var spec = new DeliveryItemSpecification();
-           var res = await _deliveryItemRepo.ListAsync(spec);
-           return Ok(_mapper.Map<IReadOnlyList<DeliveryItem>,IReadOnlyList<DeliveryItemDto>>(res));
+           var res = await _repo.GetDeliverItemsyAsync();
+           return Ok(res);
         }
 
-         [HttpGet("delivery-item/{id}")]
-        public async Task<ActionResult<DeliveryItemDto>> GetDeliveryItemByID(int id)
+        [HttpGet("delivery-item/{id}")]
+        public async Task<ActionResult<DeliveryItem>> GetDeliveryItemByID(int id)
         {
-           var spec = new DeliveryItemSpecification(id);
-           var res = await  _deliveryItemRepo.GetEntityWithSpec(spec);
-           return _mapper.Map<DeliveryItem,DeliveryItemDto>(res);
+           var res = await  _repo.GetDeliveryItemByIdAsync(id);
+           return res;
         }
         [HttpGet("delivery-locations")]
         public async Task<IActionResult> GetDeliveryLocations()
         {
-           var res = await _deliveryLocationRepo.ListAllAsync();
+           var res = await _repo.GetDeliveryLocationsAsync();
            return Ok(res);
         }
 
          [HttpGet("delivery-location/{id}")]
         public async Task<ActionResult> GetDeliveryLocationsByID(int id)
         {
-           var res = await _deliveryLocationRepo.GetByIdAsync(id);
+           var res = await _repo.GetDeliveryLocationByIdAsync(id);
            return Ok(res);
         }
         [HttpGet("delivery-distance")]
         public async Task<IActionResult> GetDeliveryDistance()
         {
-           var res = await _deliveryDistanceRepo.ListAllAsync();
+           var res = await _repo.GetDeliveryDistanceAsync();
            return Ok(res);
         }
 
          [HttpGet("delivery-distance/{id}")]
         public async Task<ActionResult> GetDeliveryDistanceByID(int id)
         {
-           var res = await _deliveryDistanceRepo.GetByIdAsync(id);
+           var res = await _repo.GetDeliveryDistanceByIdAsync(id);
            return Ok(res);
+        }
+
+        [Authorize]
+        [HttpPost("create-delivery")]
+        public async Task<ActionResult<Result>> CreateDelivery(DeliveryDTO deliveryDto)
+        {
+           var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var delivery = await _repo.CreateDeliveryAsync(deliveryDto);
+            if(delivery == null) return BadRequest(new ApiResponse(400,"Error occured while creating shipment"));
+           return new Result{
+              IsSuccessful = true,
+              Message = "Delivery created successfully",
+              ReturnedObject = delivery
+           };
         }
 
     }

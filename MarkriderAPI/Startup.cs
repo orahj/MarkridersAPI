@@ -7,16 +7,13 @@ using Infrastructure.Data;
 using Infrastructure.Data.Implementations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using System.Text.Json;
 using MarkriderAPI.Helpers;
+using MarkriderAPI.MIddleware;
+using MarkriderAPI.Controllers.errors;
+using MarkriderAPI.Extensions;
 
 namespace MarkriderAPI
 {
@@ -33,34 +30,37 @@ namespace MarkriderAPI
         {
             services.AddControllers().AddNewtonsoftJson(options => 
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-            services.AddScoped<IDeliveryRepository,DeliveryRepository>();
-            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+            services.AddApplicationService();
+            services.AddIdentityServices(_config);
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
              services.AddDbContext<MarkRiderContext>(x => 
                 x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MarkriderAPI", Version = "v1" });
-            });
+
+           services.AddSwaggerDocumentation();
+           services.AddCors( opt => {
+               opt.AddPolicy("CorsPolicy", policy =>{
+                   policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:8100");
+               });
+           });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MarkriderAPI v1"));
-            }
+            app.UseMiddleware<ExceptionMiddleWare>();
+        
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseStaticFiles();
-
+            app.UseCors("CorsPolicy");
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSwaggerDomcumentation();
 
             app.UseEndpoints(endpoints =>
             {

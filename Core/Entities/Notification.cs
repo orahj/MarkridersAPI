@@ -5,12 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Enum;
 using Newtonsoft.Json;
+using Core.Entities.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Entities
 {
     public class Notification :BaseEntity
     {
-        public int AppUserId { get; set; }
+       [Required]
+        public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public NotificationType Type { get; set; }
         public bool Read { get; set; }

@@ -10,14 +10,12 @@ namespace Core.Specifications
     {
         public DeliveryItemSpecification()
         {
-            AddInclude(x => x.FileData);
-            AddInclude(x => x.DeliveryLocation);             
+            AddInclude(x => x.FileData);            
         }
 
         public DeliveryItemSpecification(int  id) : base( x=>x.Id == id)
         {
-            AddInclude(x => x.FileData);
-            AddInclude(x => x.DeliveryLocation);     
+            AddInclude(x => x.FileData);   
         }
     }
 }

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Enum;
+using Microsoft.AspNetCore.Identity;
 
-namespace Core.Entities
+namespace Core.Entities.Identity
 {
-    public class AppUser : BaseEntity
+    public class AppUser : IdentityUser
     {
-        public string UserName { get; set; }
-        public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

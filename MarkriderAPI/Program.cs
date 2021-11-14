@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Entities.Identity;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +27,9 @@ namespace MarkriderAPI
                     var context = services.GetRequiredService<MarkRiderContext>();
                     await context.Database.MigrateAsync();
                     await MarkRiderContextSeed.SeedAsync(context,loggingFactory);
+
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    await AppIdentityDbContextSeed.SeedUser(userManager);
                 }
                 catch(Exception ex)
                 {

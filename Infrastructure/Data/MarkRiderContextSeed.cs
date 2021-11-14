@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Core.Entities;
 using Core.Enum;
 using Microsoft.Extensions.Logging;
+using Core.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace Infrastructure.Data
 {
@@ -18,16 +20,14 @@ namespace Infrastructure.Data
                    await SeedState(context);
                 if(!context.Countries.Any())
                    await SeedCountry(context);
-                if(!context.AppUsers.Any())
-                   await SeedUser(context);
                 if(!context.Deliveries.Any())
                    await SeedDelivery(context);
-                if(!context.DeliveryLocations.Any())
-                   await SeedDeliveryLocation(context);
                 if(!context.FileDatas.Any())
                     await SeedFIle(context);
                if(!context.DeliveryItems.Any())
                    await SeedDeliveryItems(context);
+                if(!context.DeliveryLocations.Any())
+                   await SeedDeliveryLocation(context);
                 if(!context.DeliveryDistances.Any())
                    await SeedDeliveryDistance(context);
             }
@@ -91,48 +91,14 @@ namespace Infrastructure.Data
             await context.SaveChangesAsync();
         }
 
-        public static async Task SeedUser(MarkRiderContext context)
-        {
-            var user = new []
-            {
-                new AppUser
-                {
-                    UserName ="test@markrider@gmail.com",
-                    PasswordHash = Encoding.ASCII.GetBytes("p@55word"),
-                    PasswordSalt = Encoding.ASCII.GetBytes("p@55word"),
-                    FirstName  = "Test",
-                    LastName  ="Test",
-                    Address  = "Test ",
-                    Avatar  = "Tets",
-                    IsActive  = true,
-                    UserTypes = UserTypes.Users,
-                    DateRegistered = DateTime.UtcNow,
-                    Gender  = Gender.Male,
-                    StateId = "AB",
-                    CountryId = 1
-                }
-            };
-            context.AppUsers.AddRange(user);
-            await context.SaveChangesAsync();
-        }
+       
         public static async Task SeedDelivery(MarkRiderContext context)
         {
             var delivery = new []
             {
-                new Delivery{DeliveryNo  = "DEL-40392", AppUserId = 1,TotalAmount  = 10000, DateCreated = DateTime.UtcNow}
+                new Delivery{DeliveryNo  = "DEL-40392", Email = "test@markrider@gmail.com",TotalAmount  = 10000, DateCreated = DateTime.UtcNow}
             };
             context.Deliveries.AddRange(delivery);
-             await context.SaveChangesAsync();
-        }
-
-        public static async Task SeedDeliveryLocation(MarkRiderContext context)
-        {
-            var deliveryLocation = new []
-            {
-                new DeliveryLocation{Address ="No 23 Ajileye street shomolu bariga",Logitude  = 2043038292, Latitude = 48929920, DeliveryDistance  = 10,DateCreated = DateTime.UtcNow}
-                
-            };
-            context.DeliveryLocations.AddRange(deliveryLocation);
              await context.SaveChangesAsync();
         }
         public static async Task SeedFIle(MarkRiderContext context)
@@ -148,11 +114,22 @@ namespace Infrastructure.Data
         {
             var deliveryItem = new [] 
             {
-                new DeliveryItem{PickUpItems ="Test Data1",DeliveryAmount =5000,DeliveryDate = DateTime.UtcNow,DeliveryTpe = Core.Enum.DeliveryTpe.Single,DeliveryStatus = Core.Enum.DeliveryStatus.Processing,Carriers = Core.Enum.Carriers.Bikes,PickUpPhone ="09069594949",DropOffPhone = "09089786756",DateCreated = DateTime.UtcNow,DeliveryId =1,FileDataId =1,DeliveryLocationId =1}
+                new DeliveryItem{PickUpItems ="Test Data1",DeliveryAmount =5000,DeliveryDate = DateTime.UtcNow,DeliveryTpe = Core.Enum.DeliveryTpe.Single,DeliveryStatus = Core.Enum.DeliveryStatus.Processing,Carriers = Core.Enum.Carriers.Bikes,PickUpPhone ="09069594949",DropOffPhone = "09089786756",DateCreated = DateTime.UtcNow,FileDataId =1, DeliveryId =1}
             };
             context.DeliveryItems.AddRange(deliveryItem);
              await context.SaveChangesAsync();       
         }
+         public static async Task SeedDeliveryLocation(MarkRiderContext context)
+        {
+            var deliveryLocation = new []
+            {
+                new DeliveryLocation{BaseAddress ="No 23 Ajileye street shomolu bariga",TargetAddress ="No 7 Ikorudu road",XLogitude  = 6.586853, XLatitude = 3.180396,DeliveryDistance  = 10,YLatitude = 06.621230,YLogitude = 003.515945,DateCreated = DateTime.UtcNow,DeliveryItemId = 1}
+                
+            };
+            context.DeliveryLocations.AddRange(deliveryLocation);
+            await context.SaveChangesAsync();
+        }
+
         public static async Task SeedDeliveryDistance(MarkRiderContext context)
         {
             var deliveryDistance = new []

@@ -15,6 +15,7 @@ namespace Infrastructure.Data.Config
             builder.Property(p =>p.Id).IsRequired();
             builder.Property(p=>p.DeliveryNo).IsRequired().HasMaxLength(15);
             builder.Property(p => p.TotalAmount).HasColumnType("decimal(18,2)");
+            //builder.HasMany(d => d.DeliveryItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
