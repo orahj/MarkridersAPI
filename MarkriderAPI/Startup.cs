@@ -35,7 +35,7 @@ namespace MarkriderAPI
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
              services.AddDbContext<MarkRiderContext>(x => 
-                x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
+                x.UseSqlServer(_config.GetConnectionString("DefaultConnection")));
 
            services.AddSwaggerDocumentation();
            services.AddCors( opt => {
