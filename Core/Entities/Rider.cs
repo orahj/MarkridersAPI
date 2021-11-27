@@ -9,7 +9,23 @@ namespace Core.Entities
 {
     public class Rider : BaseEntity
     {
-       [Required]
+        public Rider()
+        {
+        }
+        public Rider(string appUserId)
+        {
+            AppUserId = appUserId;
+        }
+        public Rider(string appUserId, string accountNumber, string bankCode, string bVN, string validID)
+        {
+            AppUserId = appUserId;
+            AccountNumber = accountNumber;
+            BankCode = bankCode;
+            BVN = bVN;
+            ValidID = validID;
+        }
+
+        [Required]
         public string AppUserId { get; set; }
         public AppUser AppUser{get;set;}
         public string AccountNumber{get;set;}

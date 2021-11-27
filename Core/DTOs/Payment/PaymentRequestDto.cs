@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.Enum;
 
-namespace MarkriderAPI.Controllers.DTOS.Payment
+namespace Core.DTOs.Payment
 {
     public class PaymentRequestDto
     {

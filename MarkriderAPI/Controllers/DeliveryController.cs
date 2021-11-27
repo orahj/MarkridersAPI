@@ -38,49 +38,55 @@ namespace MarkriderAPI.Controllers
            var res = await _repo.GetDeliveryAsync();
            //var totalItem = await _repo.GetCountAsync(sort,email,specParams);
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
-           return Ok(res);
+           return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
 
          [HttpGet("{id}")]
          [ProducesResponseType(StatusCodes.Status200OK)]
          [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
 
-        public async Task<ActionResult<Delivery>> GetDeliveryByID(int id)
+        public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveryByID(int id)
         {
            var res = await _repo.GetDeliveryByIdAsync(id);
            if(res == null) return NotFound(new ApiResponse(404));
-           return res;
+           return _mapper.Map<Delivery,DeliveryReturnDTO>(res);
         }
          [HttpGet("get-delivery-by-email")]
-        public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveriesByEmail()
+        public async Task<ActionResult<IReadOnlyList<DeliveryReturnDTO>>> GetDeliveriesByEmail()
         {
           var email = HttpContext.User.RetrieveEmailFromPrincipal();
            var res = await _repo.GetDeliveryByEmailAsync(email);
          //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
-           return Ok(res);
+           return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
          [HttpGet("get-delivery-by-shipment/{shipmentNo}")]
-        public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveriesNoEmail(string num)
+        public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveriesNoEmail(string num)
         {
             var email = HttpContext.User.RetrieveEmailFromPrincipal();
            var res = await _repo.GetDeliveryByDeliveryNoAsync(email,num);
          //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
-           return Ok(res);
+           return Ok(_mapper.Map<Delivery,DeliveryReturnDTO>(res));
         }
         [HttpGet("delivery-items")]
-        public async Task<ActionResult<IReadOnlyList<DeliveryItem>>> GetDeliveryItems()
+        public async Task<ActionResult<IReadOnlyList<DeliveryItemReturnDTO>>> GetDeliveryItems()
         {
            var res = await _repo.GetDeliverItemsyAsync();
-           return Ok(res);
+           return Ok(_mapper.Map<IReadOnlyList<DeliveryItem>,IReadOnlyList<DeliveryItemReturnDTO>>(res));
         }
 
         [HttpGet("delivery-item/{id}")]
-        public async Task<ActionResult<DeliveryItem>> GetDeliveryItemByID(int id)
+        public async Task<ActionResult<DeliveryItemReturnDTO>> GetDeliveryItemByID(int id)
         {
            var res = await  _repo.GetDeliveryItemByIdAsync(id);
-           return res;
+           return _mapper.Map<DeliveryItem,DeliveryItemReturnDTO>(res);
+        }
+        [HttpGet("delivery-item-by-delivery/{deliveryId}/{id}")]
+        public async Task<ActionResult<DeliveryItemReturnDTO>> GetDeliveryItemByDeliveryID(int deliveryId,int id)
+        {
+           var res = await  _repo.GetDeliveryItemByDeliveryIdAsync(deliveryId,id);
+           return _mapper.Map<DeliveryItem,DeliveryItemReturnDTO>(res);
         }
         [HttpGet("delivery-locations")]
         public async Task<IActionResult> GetDeliveryLocations()
@@ -102,7 +108,7 @@ namespace MarkriderAPI.Controllers
            return Ok(res);
         }
 
-         [HttpGet("delivery-distance/{id}")]
+        [HttpGet("delivery-distance/{id}")]
         public async Task<ActionResult> GetDeliveryDistanceByID(int id)
         {
            var res = await _repo.GetDeliveryDistanceByIdAsync(id);
@@ -116,12 +122,18 @@ namespace MarkriderAPI.Controllers
            var email = HttpContext.User.RetrieveEmailFromPrincipal();
             var delivery = await _repo.CreateDeliveryAsync(deliveryDto);
             if(delivery == null) return BadRequest(new ApiResponse(400,"Error occured while creating shipment"));
+
            return new Result{
               IsSuccessful = true,
               Message = "Delivery created successfully",
-              ReturnedObject = delivery
+              ReturnedObject = _mapper.Map<Delivery,DeliveryReturnDTO>(delivery)
            };
         }
-
+         [HttpGet("delivery-transactions/{id}")]
+        public async Task<ActionResult> GetDeliveryTransactionsByID(int id)
+        {
+           var res = await _repo.GetDeliveryDistanceByIdAsync(id);
+           return Ok(res);
+        }
     }
 }

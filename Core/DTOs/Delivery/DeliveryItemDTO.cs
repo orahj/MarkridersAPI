@@ -17,6 +17,20 @@ namespace Core.DTOs.Delivery
         public int DeliveryId { get; set; }
         public int FileDataId {get;set;}
         public DeliveryLocationDTO BaseLocation { get; set; }
-         public DeliveryLocationDTO TargetLocation { get; set; }
+        public DeliveryLocationDTO TargetLocation { get; set; }
+    }
+     public class DeliveryItemReturnDTO
+    {
+        public int Id {get; set;}
+        public string PickUpItems { get; set; }
+        public string DeliveryTpe { get; set; }
+        public string DeliveryTime { get; set; }
+        public string Carriers { get; set; }
+        public string PickUpPhone { get; set; }
+        public string DropOffPhone { get; set; }
+        public int DeliveryId { get; set; }
+        public string ImageUrl {get;set;}
+        public string DeliveryStatus{get;set;}
+        public DeliveryLocationReturnDTO DeliveryLocation{get;set;}
     }
 }

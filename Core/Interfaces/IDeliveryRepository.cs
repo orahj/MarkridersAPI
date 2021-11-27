@@ -15,10 +15,12 @@ namespace Core.Interfaces
         Task<IReadOnlyList<Delivery>> GetDeliveryAsync();
         Task<IReadOnlyList<Delivery>> GetDeliveryByEmailAsync(string email);
         Task<DeliveryItem> GetDeliveryItemByIdAsync(int Id);
+        Task<DeliveryItem> GetDeliveryItemByDeliveryIdAsync(int Id, int deliveryId);
         Task<IReadOnlyList<DeliveryItem>> GetDeliverItemsyAsync();
         Task<DeliveryLocation> GetDeliveryLocationByIdAsync(int Id);
         Task<IReadOnlyList<DeliveryLocation>> GetDeliveryLocationsAsync();
         Task<DeliveryDistance> GetDeliveryDistanceByIdAsync(int Id);
+         Task<Transaction> GetDeliveryTransactionByIdAsync(int Id);
         Task<IReadOnlyList<DeliveryDistance>> GetDeliveryDistanceAsync();
         Task<Delivery> CreateDeliveryAsync(DeliveryDTO model);
         Task<int> GetCountAsync(string sort, string email,SpecParams specParams);

@@ -9,6 +9,14 @@ namespace Core.Entities
 {
     public class Wallet : BaseEntity
     {
+        public Wallet(string appUserId, decimal balance, decimal lastSpend, bool isActive)
+        {
+            AppUserId = appUserId;
+            Balance = balance;
+            LastSpend = lastSpend;
+            IsActive = isActive;
+        }
+
         [Required]
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }

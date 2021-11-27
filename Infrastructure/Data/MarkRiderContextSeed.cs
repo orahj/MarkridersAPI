@@ -24,12 +24,14 @@ namespace Infrastructure.Data
                    await SeedDelivery(context);
                 if(!context.FileDatas.Any())
                     await SeedFIle(context);
-               if(!context.DeliveryItems.Any())
-                   await SeedDeliveryItems(context);
                 if(!context.DeliveryLocations.Any())
                    await SeedDeliveryLocation(context);
+                if(!context.DeliveryItems.Any())
+                   await SeedDeliveryItems(context);
                 if(!context.DeliveryDistances.Any())
                    await SeedDeliveryDistance(context);
+                if(!context.AdditionalCharges.Any())
+                    await SeedAdditionalCharges(context);
             }
             catch(Exception ex)
             {
@@ -110,23 +112,33 @@ namespace Infrastructure.Data
             await context.FileDatas.AddRangeAsync(file);
             await context.SaveChangesAsync();
         }
-        public static async Task SeedDeliveryItems(MarkRiderContext context)
-        {
-            var deliveryItem = new [] 
-            {
-                new DeliveryItem{PickUpItems ="Test Data1",DeliveryAmount =5000,DeliveryDate = DateTime.UtcNow,DeliveryTpe = Core.Enum.DeliveryTpe.Single,DeliveryStatus = Core.Enum.DeliveryStatus.Processing,Carriers = Core.Enum.Carriers.Bikes,PickUpPhone ="09069594949",DropOffPhone = "09089786756",DateCreated = DateTime.UtcNow,FileDataId =1, DeliveryId =1}
-            };
-            context.DeliveryItems.AddRange(deliveryItem);
-             await context.SaveChangesAsync();       
-        }
+        
          public static async Task SeedDeliveryLocation(MarkRiderContext context)
         {
             var deliveryLocation = new []
             {
-                new DeliveryLocation{BaseAddress ="No 23 Ajileye street shomolu bariga",TargetAddress ="No 7 Ikorudu road",XLogitude  = 6.586853, XLatitude = 3.180396,DeliveryDistance  = 10,YLatitude = 06.621230,YLogitude = 003.515945,DateCreated = DateTime.UtcNow,DeliveryItemId = 1}
+                new DeliveryLocation{BaseAddress ="No 23 Ajileye street shomolu bariga",TargetAddress ="No 7 Ikorudu road",XLogitude  = 6.586853, XLatitude = 3.180396,DeliveryDistance  = 10,YLatitude = 06.621230,YLogitude = 003.515945,DateCreated = DateTime.UtcNow}
                 
             };
             context.DeliveryLocations.AddRange(deliveryLocation);
+            await context.SaveChangesAsync();
+        }
+        public static async Task SeedDeliveryItems(MarkRiderContext context)
+        {
+            var deliveryItem = new [] 
+            {
+                new DeliveryItem{PickUpItems ="Test Data1",DeliveryAmount =5000,DeliveryDate = DateTime.UtcNow,DeliveryTpe = Core.Enum.DeliveryTpe.Single,DeliveryStatus = Core.Enum.DeliveryStatus.Processing,Carriers = Core.Enum.Carriers.Bikes,PickUpPhone ="09069594949",DropOffPhone = "09089786756",DateCreated = DateTime.UtcNow,FileDataId =1, DeliveryId =1,DeliveryLocationId = 1}
+            };
+            context.DeliveryItems.AddRange(deliveryItem);
+             await context.SaveChangesAsync();       
+        }
+        public static async Task SeedAdditionalCharges(MarkRiderContext context)
+        {
+            var AdditionalCharges = new[] 
+            {
+                new AdditionalCharges(){PaymentMethod = PaymentMethod.Paystack, Name="Transaction Fee (PSTK)", IsFixed = false, Amount = 1000, Rate = 1, CreatedBy = 1, DateCreated = DateTime.Now}
+            };
+            context.AdditionalCharges.AddRange(AdditionalCharges);
             await context.SaveChangesAsync();
         }
 

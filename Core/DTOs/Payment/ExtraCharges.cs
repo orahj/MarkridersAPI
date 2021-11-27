@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MarkriderAPI.Controllers.DTOS.Payment
+namespace Core.DTOs.Payment
 {
      public class ExtraCharge
     {

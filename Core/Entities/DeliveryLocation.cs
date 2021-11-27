@@ -11,7 +11,7 @@ namespace Core.Entities
         {
         }
 
-        public DeliveryLocation(string baseAddress, double xLogitude, double xLatitude, double deliveryDistance, double yLogitude, double yLatitude, string targetAddress,int deliveryItemId)
+        public DeliveryLocation(string baseAddress, double xLogitude, double xLatitude, double deliveryDistance, double yLogitude, double yLatitude, string targetAddress)
         {
             BaseAddress = baseAddress;
             XLogitude = xLogitude;
@@ -20,7 +20,6 @@ namespace Core.Entities
             YLogitude = yLogitude;
             YLatitude = yLatitude;
             TargetAddress = targetAddress;
-            DeliveryItemId = deliveryItemId;
         }
 
         public string BaseAddress { get; set; }
@@ -31,7 +30,6 @@ namespace Core.Entities
         public double YLatitude { get; set; }
          public string TargetAddress { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
-        public int DeliveryItemId{get;set;}
-        public DeliveryItem DeliveryItem{get;set;}
+        public IReadOnlyList<DeliveryItem> DeliveryItems{get;set;}
     }
 }

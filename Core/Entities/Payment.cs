@@ -10,6 +10,22 @@ namespace Core.Entities
 {
     public class Payment : BaseEntity
     {
+        public Payment()
+        {
+        }
+
+        public Payment(string appUserId,PaymentMethod paymentMethod, string serialNumber, string invoiceNumber, bool paid, string transactionRef, int transactionsId)
+        {
+            AppUserId = appUserId;
+            PaymentMethod = paymentMethod;
+            SerialNumber = serialNumber;
+            InvoiceNumber = invoiceNumber;
+            Paid = paid;
+            TransactionRef = transactionRef;
+            TransactionsId = transactionsId;
+            PaymentDate = DateTime.UtcNow;
+        }
+
         [Required]
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }

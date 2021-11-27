@@ -13,10 +13,14 @@ namespace MarkriderAPI.Helpers
     {
         public MappingProfiles()
         {
-            CreateMap<Delivery,DeliveryDTO>();
+            // CreateMap<Delivery,DeliveryDTO>();
 
-            CreateMap<DeliveryItem,DeliveryItemDto>()
-                .ForMember(x =>x.FileURL, o =>o.MapFrom<FileUrlResolver>());
-            }
+            // CreateMap<DeliveryItem,DeliveryItemDto>()
+            //     .ForMember(x =>x.FileURL, o =>o.MapFrom<FileUrlResolver>());
+            CreateMap<Delivery,DeliveryReturnDTO>();
+            CreateMap<DeliveryItem,DeliveryItemReturnDTO>()
+                .ForMember(x=>x.ImageUrl, o=> o.MapFrom(s => s.FileData.URL));
+            CreateMap<DeliveryLocation,DeliveryLocationReturnDTO>();
+        }
     }
 }

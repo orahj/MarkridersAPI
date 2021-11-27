@@ -16,6 +16,38 @@ namespace Infrastructure.Data.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.3");
 
+            modelBuilder.Entity("Core.Entities.AdditionalCharges", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("Amount")
+                        .HasColumnType("REAL");
+
+                    b.Property<int?>("CreatedBy")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool?>("IsFixed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double?>("Rate")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdditionalCharges");
+                });
+
             modelBuilder.Entity("Core.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
@@ -36,8 +68,8 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("DateCreated")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("DeliveryNo")
                         .IsRequired()
@@ -83,16 +115,19 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("DateCreated")
+                        .HasColumnType("INTEGER");
 
                     b.Property<double>("DeliveryAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTimeOffset>("DeliveryDate")
-                        .HasColumnType("TEXT");
+                    b.Property<long>("DeliveryDate")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("DeliveryId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DeliveryLocationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("DeliveryStatus")
@@ -123,6 +158,8 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasIndex("DeliveryId");
 
+                    b.HasIndex("DeliveryLocationId");
+
                     b.HasIndex("FileDataId");
 
                     b.ToTable("DeliveryItems");
@@ -143,9 +180,6 @@ namespace Infrastructure.Data.Migrations
                     b.Property<double>("DeliveryDistance")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("DeliveryItemId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("TargetAddress")
                         .HasColumnType("TEXT");
 
@@ -162,8 +196,6 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DeliveryItemId");
 
                     b.ToTable("DeliveryLocations");
                 });
@@ -248,6 +280,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("BLOB");
 
+                    b.Property<int>("Percentage")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
 
@@ -261,6 +296,9 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserCategory")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
@@ -636,6 +674,12 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Core.Entities.DeliveryLocation", "DeliveryLocation")
+                        .WithMany("DeliveryItems")
+                        .HasForeignKey("DeliveryLocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Core.Entities.FileData", "FileData")
                         .WithMany()
                         .HasForeignKey("FileDataId")
@@ -644,18 +688,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.Navigation("Delivery");
 
+                    b.Navigation("DeliveryLocation");
+
                     b.Navigation("FileData");
-                });
-
-            modelBuilder.Entity("Core.Entities.DeliveryLocation", b =>
-                {
-                    b.HasOne("Core.Entities.DeliveryItem", "DeliveryItem")
-                        .WithMany("DeliveryLocations")
-                        .HasForeignKey("DeliveryItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DeliveryItem");
                 });
 
             modelBuilder.Entity("Core.Entities.Identity.AppUser", b =>
@@ -822,9 +857,9 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("DeliveryItems");
                 });
 
-            modelBuilder.Entity("Core.Entities.DeliveryItem", b =>
+            modelBuilder.Entity("Core.Entities.DeliveryLocation", b =>
                 {
-                    b.Navigation("DeliveryLocations");
+                    b.Navigation("DeliveryItems");
                 });
 
             modelBuilder.Entity("Core.Entities.State", b =>

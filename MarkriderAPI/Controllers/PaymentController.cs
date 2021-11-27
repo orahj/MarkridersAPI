@@ -2,87 +2,85 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.DTOs;
+using Core.DTOs.Payment;
+using Core.Entities.Identity;
+using Infrastructure.Data.Implementations;
 using MarkriderAPI.Controllers.DTOS;
-using MarkriderAPI.Controllers.DTOS.Payment;
+using MarkriderAPI.Controllers.errors;
+using MarkriderAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using static MarkriderAPI.Controllers.DTOS.Payment.PaymentRequestDto;
+using static Core.DTOs.Payment.PaymentRequestDto;
 
 namespace MarkriderAPI.Controllers
 {
     [Authorize]
     public class PaymentController : BaseAPiController
     {
-         //not in use
-        [HttpPost("Createplan")]
-        [ProducesResponseType(typeof(CreatePaystackSubscriptionResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Createplan(CreatePaystackSubscriptionRequest paystackSubscriptionRequest)
+        private readonly PaymentRepository _payment;
+        private readonly UserManager<AppUser> _userManager;
+        public PaymentController(PaymentRepository payment,UserManager<AppUser> userManager)
         {
-
-            return Ok();
+            _userManager = userManager;
+            _payment = payment;
         }
-
-
-
         [HttpPost("verifyTransaction")]
-        [ProducesResponseType(typeof(CreatePaystackSubscriptionResponse), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(CreatePaystackSubscriptionResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> verifyTransactionAsync(VerifyTransaction paystackSubscriptionRequest)
+        public async Task<ActionResult> verifyTransactionAsync(VerifyTransaction paystackSubscriptionRequest)
         {
-            return Ok();
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            if(email != paystackSubscriptionRequest.Email)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            var appUser = await _userManager.FindByEmailAsync(paystackSubscriptionRequest.Email);
+            paystackSubscriptionRequest.UserId = appUser.Id;
+            var payment = await _payment.VerifyPaystackTransFirstTime(paystackSubscriptionRequest);
+            return Ok(payment);
         }
-
-
-        [HttpPost("verifyFirstTransaction")]
-        [ProducesResponseType(typeof(CreatePaystackSubscriptionResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> VerifyFirstTransactionAsync(VerifyTransaction paystackSubscriptionRequest)
-        {
-            return Ok();
-        } [HttpPost("bvn-look-up")]
+        [HttpPost("bvn-look-up")]
         [ProducesResponseType(typeof(BVNVerificationObject), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BVNVerificationResponse), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(BVNVerificationResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> BVNLookUp(BVNVerificationObject data)
+        public async Task<ActionResult> BVNLookUp(BVNVerificationObject data)
         {
-            return Ok();
-        }
-
-        [HttpGet("PaymentCharge")]
-        [ProducesResponseType(typeof(ExtraCharges), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetPaymentCharge(decimal Amount)
-        {
-            return Ok();
+            var bnvLookUp = await _payment.VerifyBvn(data);
+            return Ok(bnvLookUp);
         }
         [HttpPost("payment-with-transfer")]
         [ProducesResponseType(typeof(FundPaymentTransferDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PaymentWithTransfer(FundPaymentTransferDto data)
+        public async Task<ActionResult> PaymentWithTransfer(FundPaymentTransferDto data)
         {
-            return Ok();
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            if(email != data.Email)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            var appUser = await _userManager.FindByEmailAsync(data.Email);
+            data.UserId = appUser.Id;
+            var transfer = _payment.TransferPayment(data);
+            return Ok(transfer);
         }
-        [HttpPost("validate-transfer")]
-        [ProducesResponseType(typeof(ValidateTransfer), StatusCodes.Status200OK)]
+        [HttpGet("validate-transfer/{Id}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAjoGroups(ValidateTransfer data)
+        public async Task<ActionResult> TransferPayment(int Id)
         {
-            var response = new Result();
+            var completeTransfer = await _payment.CompleteTransferPayment(Id);
+            return Ok(completeTransfer);
+        }
 
-            try
-            {
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                response.IsSuccessful = false;
-                response.Message = e.Message;
-                response.ReturnedCode = StatusCodes.Status500InternalServerError.ToString();
-
-                return BadRequest(response);
-            }
-    }
+        [HttpGet("getbanks")]
+        //[ProducesResponseType(typeof(BankListResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetBank()
+        {
+            var bankLint = await _payment.BankList();
+            return Ok(bankLint);
+        }
 }
 }

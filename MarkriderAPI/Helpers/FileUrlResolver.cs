@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.DTOs.Delivery;
 using Core.Entities;
 using MarkriderAPI.Controllers.DTOS;
 using Microsoft.Extensions.Configuration;
 
 namespace MarkriderAPI.Helpers
 {
-    public class FileUrlResolver : IValueResolver<DeliveryItem, DeliveryItemDto, string>
+    public class FileUrlResolver : IValueResolver<DeliveryItem, DeliveryItemReturnDTO, string>
     {
         private readonly IConfiguration _config;
         public FileUrlResolver(IConfiguration config)
@@ -17,7 +18,7 @@ namespace MarkriderAPI.Helpers
             _config = config;
         }
 
-        public string Resolve(DeliveryItem source, DeliveryItemDto destination, string destMember, ResolutionContext context)
+        public string Resolve(DeliveryItem source, DeliveryItemReturnDTO destination, string destMember, ResolutionContext context)
         {
            if(!string.IsNullOrEmpty(source.FileData.URL))
            {

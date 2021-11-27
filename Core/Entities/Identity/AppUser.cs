@@ -22,5 +22,8 @@ namespace Core.Entities.Identity
         public State State { get; set; }
         public int CountryId { get; set; }
         public Country Country { get; set; }
+        public int Percentage{ get; set; }
+        public UserCategory UserCategory { get; set; }
+
     }
 }

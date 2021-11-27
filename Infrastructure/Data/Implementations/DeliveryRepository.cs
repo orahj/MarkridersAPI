@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Core.DTOs;
 using Core.DTOs.Delivery;
+using Core.DTOs.Payment;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
@@ -15,9 +16,11 @@ namespace Infrastructure.Data.Implementations
     {
         private readonly ISecurityService _security;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentRepository _paymentRepository;
 
-        public DeliveryRepository(ISecurityService security, IUnitOfWork unitOfWork)
+        public DeliveryRepository(ISecurityService security, IUnitOfWork unitOfWork, IPaymentRepository paymentRepository)
         {
+            _paymentRepository = paymentRepository;
             _unitOfWork = unitOfWork;
             _security = security;
         }
@@ -75,17 +78,18 @@ namespace Infrastructure.Data.Implementations
                     
                     if(amt.Amount > 0)
                     {
+                        var location = new DeliveryLocation(item.BaseLocation.Address,
+                        item.BaseLocation.Longitude,item.BaseLocation.Latitude,distanceToCover,item.TargetLocation.Longitude,
+                        item.TargetLocation.Latitude,item.TargetLocation.Address);
+                        _unitOfWork.Repository<DeliveryLocation>().Add(location);
+                        await _unitOfWork.Complete();
+
                         var deliveryItem = new DeliveryItem(item.PickUpItems,amt.Amount,item.DeliveryTpe,
                         item.DeliveryTime,item.Carriers,
-                        item.PickUpPhone,item.DropOffPhone,item.FileDataId,delivery.Id);
+                        item.PickUpPhone,item.DropOffPhone,item.FileDataId,delivery.Id,location.Id);
                         items.Add(deliveryItem);
                         _unitOfWork.Repository<DeliveryItem>().Add(deliveryItem);
                         await _unitOfWork.Complete();
-
-                        var location = new DeliveryLocation(item.BaseLocation.Address,
-                        item.BaseLocation.Longitude,item.BaseLocation.Latitude,distanceToCover,item.TargetLocation.Longitude,
-                        item.TargetLocation.Latitude,item.TargetLocation.Address,deliveryItem.Id);
-                        locations.Add(location);
                     }
 
                 }
@@ -103,15 +107,16 @@ namespace Infrastructure.Data.Implementations
                  _unitOfWork.Repository<DeliveryLocation>().Add(item);
             }
 
+            //save Transaction
+            var amountWithCharge = await _paymentRepository.GetPaymentCharges(total);
+            Transaction tran = new Transaction(updateDel.TotalAmount,amountWithCharge.Total,updateDel.Id);
+            _unitOfWork.Repository<Transaction>().Add(tran);
+
            //save changes to context
            var result = await _unitOfWork.Complete();
 
            if(result <= 0) return null;
            delivery.DeliveryItems = items;
-           foreach (var item in delivery.DeliveryItems)
-           {
-               item.DeliveryLocations = locations;
-           }
            return delivery;
 
         }
@@ -194,6 +199,18 @@ namespace Infrastructure.Data.Implementations
                     Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
             double distanceInMeter =  6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
             return distanceInMeter/1000;
+        }
+       
+        public async Task<Transaction> GetDeliveryTransactionByIdAsync(int Id)
+        {
+            var spec = new TransactionWithSPec(Id);
+            return await _unitOfWork.Repository<Transaction>().GetEntityWithSpec(spec);
+        }
+
+        public async Task<DeliveryItem> GetDeliveryItemByDeliveryIdAsync(int Id, int deliveryId)
+        {
+            var spec = new DeliveryItemSpecification(Id,deliveryId);
+            return await _unitOfWork.Repository<DeliveryItem>().GetEntityWithSpec(spec);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Core.Entities
         {
         }
 
-        public DeliveryItem(string pickUpItems, decimal deliveryAmount, DeliveryTpe deliveryTpe, DeliveryTime deliveryTime, Carriers carriers, string pickUpPhone, string dropOffPhone, int fileDataId,int deliveryId)
+        public DeliveryItem(string pickUpItems, decimal deliveryAmount, DeliveryTpe deliveryTpe, DeliveryTime deliveryTime, Carriers carriers, string pickUpPhone, string dropOffPhone, int fileDataId,int deliveryId,int deliveryLocationId)
         {
             PickUpItems = pickUpItems;
             DeliveryAmount = deliveryAmount;
@@ -23,6 +23,7 @@ namespace Core.Entities
             DropOffPhone = dropOffPhone;
             FileDataId = fileDataId;
             DeliveryId = deliveryId;
+            DeliveryLocationId = deliveryLocationId;
         }
 
         public string PickUpItems { get; set; }
@@ -39,7 +40,9 @@ namespace Core.Entities
         public FileData FileData {get;set;}
         public int DeliveryId {get;set;}
         public Delivery Delivery {get;set;}
-         public virtual IReadOnlyList<DeliveryLocation> DeliveryLocations { get; set; }
+        public int DeliveryLocationId {get;set;}
+        public DeliveryLocation DeliveryLocation {get;set;}
+         //public virtual IReadOnlyList<DeliveryLocation> DeliveryLocations { get; set; }
 
     }
 }

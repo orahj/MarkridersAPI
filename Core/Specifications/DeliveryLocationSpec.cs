@@ -10,14 +10,12 @@ namespace Core.Specifications
     {
         public DeliveryLocationeSpec()
         {
-            AddInclude(x => x.DeliveryItem);
-            AddInclude(X =>X.DeliveryItem.Delivery);            
+            AddInclude(x => x.DeliveryItems);            
         }
 
         public DeliveryLocationeSpec(int  id) : base( x=>x.Id == id)
         {
-            AddInclude(x => x.DeliveryItem);
-            AddInclude(X =>X.DeliveryItem.Delivery);   
+            AddInclude(x => x.DeliveryItems); 
         }
     }
 }

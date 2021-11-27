@@ -12,4 +12,13 @@ namespace Core.DTOs.Delivery
         public string Email { get; set; }
         public virtual ICollection<DeliveryItemDTO> DeliveryItems { get; set; }
     }
+    public class DeliveryReturnDTO
+    {
+        public int Id {get;set;}
+        public string DeliveryNo { get; set; }
+        public string Email { get; set; }
+        public decimal TotalAmount { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public virtual IReadOnlyList<DeliveryItemReturnDTO> DeliveryItems { get; set; }
+    }
 }

@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.DTOs;
 using MarkriderAPI.Controllers.DTOS;
 using MarkriderAPI.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace MarkriderAPI.Controllers
 {
     public class FileManagerController : BaseAPiController
     {
+        private readonly IConfiguration _config;
+        public FileManagerController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         [HttpPost("Single"), DisableRequestSizeLimit]
         public async Task<IActionResult> Single(List<IFormFile> files)
         {
@@ -40,13 +48,13 @@ namespace MarkriderAPI.Controllers
                 {
                     await httpPostedFile.CopyToAsync(bits);
                 }
-
+                var url = _config["ApiUrl"] + fileName;
                 response = new Result
                 {
                     IsSuccessful = true,
                     Message = "Operation Successful!",
                     ReturnedCode = StatusCodes.Status200OK.ToString(),
-                    ReturnedObject = new { fileName }
+                    ReturnedObject = new {url}
                 };
 
                 return Ok(response);

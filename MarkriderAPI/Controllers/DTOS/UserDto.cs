@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Enum;
 
 namespace MarkriderAPI.Controllers.DTOS
 {
@@ -15,6 +16,7 @@ namespace MarkriderAPI.Controllers.DTOS
         public string Country{get;set;}
         public string FirstName{get;set;}
         public string LastName{get;set;}
+        public UserTypes UserTypes{get;set;}
 
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MarkriderAPI.Controllers.DTOS.Wallet
+namespace Core.DTOs.Wallet
 {
     public class WalletTransactionResponseDto
     {
