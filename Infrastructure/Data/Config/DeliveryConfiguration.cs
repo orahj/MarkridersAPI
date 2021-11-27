@@ -13,7 +13,7 @@ namespace Infrastructure.Data.Config
         public void Configure(EntityTypeBuilder<Delivery> builder)
         {
             builder.Property(p =>p.Id).IsRequired();
-            builder.Property(p=>p.DeliveryNo).IsRequired().HasMaxLength(15);
+            builder.Property(p=>p.DeliveryNo).IsRequired();
             builder.Property(p => p.TotalAmount).HasColumnType("decimal(18,2)");
             //builder.HasMany(d => d.DeliveryItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         }
