@@ -82,27 +82,35 @@ namespace MarkriderAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<Result>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
-
-            if(user == null) return Unauthorized(new ApiResponse(401));
-
-            var result = await _signInManager.CheckPasswordSignInAsync(user,loginDto.Password,false);
-
-            if(!result.Succeeded) return Unauthorized(new ApiResponse(401));
-            var usr = new UserDto
+            try
             {
-                Email = user.Email,
-                Token = _tokenService.CreatToken(user),
-                UserName = user.Email,
-                Id = user.Id,
-                UserTypes = user.UserTypes
+                var user = await _userManager.FindByEmailAsync(loginDto.Email);
+
+                if(user == null) return Unauthorized(new ApiResponse(401));
+
+                var result = await _signInManager.CheckPasswordSignInAsync(user,loginDto.Password,false);
+
+                if(!result.Succeeded) return Unauthorized(new ApiResponse(401));
+                var usr = new UserDto
+                {
+                    Email = user.Email,
+                    Token = _tokenService.CreatToken(user),
+                    UserName = user.Email,
+                    Id = user.Id,
+                    UserTypes = user.UserTypes
+                };
+                return new Result
+                {
+                    IsSuccessful = true,
+                    Message = "Logged in successfully",
+                    ReturnedObject = usr
             };
-            return new Result
+            }
+            catch(Exception ex)
             {
-                IsSuccessful = true,
-                Message = "Logged in successfully",
-                ReturnedObject = usr
-            };
+                throw ex;
+            }
+            
         }
 
          [HttpPost("register")]
