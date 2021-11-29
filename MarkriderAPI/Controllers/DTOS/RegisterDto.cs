@@ -28,10 +28,9 @@ namespace MarkriderAPI.Controllers.DTOS
         ErrorMessage ="Password must contain 1 uppsercase, 1 lowercase , 1 alphanumeric and atleast 6 characters")]
         public string Password{get;set;}
         public UserTypes UserTypes {get; set; }
-        public DateTime DateRegistered { get; set; }
         public Gender Gender { get; set; }
         [Required]
-        public string State { get; set; }
+        public int State { get; set; }
         [Required]
         public int Country { get; set; }
         public string Phone{get;set;}

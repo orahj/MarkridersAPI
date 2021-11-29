@@ -20,7 +20,7 @@ namespace MarkriderAPI.Helpers
 
         public static string GetTempFolderPath()
         {
-            var folderName = Path.Combine("images/temp");
+            var folderName = Path.Combine("wwwroot/images/temp");
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
             if (!Directory.Exists(folderPath))

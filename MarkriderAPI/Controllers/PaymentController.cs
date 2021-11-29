@@ -17,7 +17,7 @@ using static Core.DTOs.Payment.PaymentRequestDto;
 
 namespace MarkriderAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class PaymentController : BaseAPiController
     {
         private readonly PaymentRepository _payment;

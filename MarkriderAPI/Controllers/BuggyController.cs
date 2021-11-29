@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarkriderAPI.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi =true)]
     public class BuggyController : BaseAPiController
     {
         private readonly MarkRiderContext _context;

@@ -26,7 +26,7 @@ namespace Infrastructure.Data
                     UserTypes = UserTypes.Users,
                     DateRegistered = DateTime.UtcNow,
                     Gender  = Gender.Male,
-                    StateId = "AB",
+                    StateId = 1,
                     CountryId = 1
                 };
                 await userManager.CreateAsync(user,"P@$$w0rd");

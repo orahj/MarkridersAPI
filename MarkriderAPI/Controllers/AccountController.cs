@@ -30,12 +30,13 @@ namespace MarkriderAPI.Controllers
         private readonly IRiderGuarantorRepository _riderGuarantorRepository;
         private readonly IRiderRepository _riderRepository;
         private readonly IWalletRepository _walletRepository;
+        private readonly IGeneralRepository _generalRepository;
 
         public AccountController(ILogger<AccountController> logger, UserManager<AppUser> userManager,
          SignInManager<AppUser> signInManager,
           ITokenService tokenService, IConfiguration config,
           IRiderGuarantorRepository riderGuarantorRepository, 
-          IRiderRepository riderRepository,IWalletRepository walletRepository )
+          IRiderRepository riderRepository,IWalletRepository walletRepository,IGeneralRepository generalRepository )
         {
             _riderGuarantorRepository = riderGuarantorRepository;
             _config = config;
@@ -45,8 +46,9 @@ namespace MarkriderAPI.Controllers
             _logger = logger;
             _riderRepository = riderRepository;
             _walletRepository = walletRepository;
+            _generalRepository = generalRepository;
         }
-        [Authorize]
+        //[Authorize]
         [HttpGet("current-user")]
         public async Task<ActionResult<Result>> GetCurrentUser()
         {
@@ -79,6 +81,28 @@ namespace MarkriderAPI.Controllers
                 Message ="User Found"
             };
         }
+        [HttpGet("get-states")]
+        public async Task<ActionResult<Result>> GetStates([FromQuery] string email)
+        {
+            var states = await _generalRepository.GetState();
+            return new Result
+            {
+                IsSuccessful = true,
+                Message ="States retrieved successfully!",
+                ReturnedObject = states
+            };
+        }
+        [HttpGet("get-countries")]
+        public async Task<ActionResult<Result>> GetCountries([FromQuery] string email)
+        {
+            var countries = await _generalRepository.GetCountry();
+            return new Result
+            {
+                IsSuccessful = true,
+                Message ="States retrieved successfully!",
+                ReturnedObject = countries
+            };
+        }
         [HttpPost("login")]
         public async Task<ActionResult<Result>> Login(LoginDto loginDto)
         {
@@ -91,13 +115,23 @@ namespace MarkriderAPI.Controllers
                 var result = await _signInManager.CheckPasswordSignInAsync(user,loginDto.Password,false);
 
                 if(!result.Succeeded) return Unauthorized(new ApiResponse(401));
+                //get states
+                var state = await _generalRepository.GetStateById(user.StateId);
+
+                //get con=untry
+                var country = await _generalRepository.GetCountryById(user.CountryId);
                 var usr = new UserDto
                 {
                     Email = user.Email,
                     Token = _tokenService.CreatToken(user),
                     UserName = user.Email,
                     Id = user.Id,
-                    UserTypes = user.UserTypes
+                    UserTypes = user.UserTypes,
+                    FirstName = user.FirstName,
+                    LastName=user.LastName,
+                    Avatar=user.Avatar,
+                    State = state.Name,
+                    Country = country.Name
                 };
                 return new Result
                 {
@@ -121,6 +155,7 @@ namespace MarkriderAPI.Controllers
             {
                 "Email address already exist!"
             }});
+            var url = _config["ApiUrl"] +"images/temp/avatar.jpg";
             var user = new AppUser
             {
                 UserName = model.UserName,
@@ -130,11 +165,12 @@ namespace MarkriderAPI.Controllers
                 Address  = model.Address,
                 IsActive = model.IsActive,
                 UserTypes = model.UserTypes,
-                DateRegistered = DateTime.UtcNow,
+                DateRegistered = DateTime.Now,
                 Gender = model.Gender,
                 StateId = model.State,
                 CountryId = model.Country,
-                UserCategory = model.UserCategory
+                UserCategory = model.UserCategory,
+                Avatar = url
             };
             //check for user type and category
             if(model.UserTypes == Core.Enum.UserTypes.Users)
@@ -173,7 +209,8 @@ namespace MarkriderAPI.Controllers
                 var wallet = new CreateWalletDTO(user.Id,0,0,true);
                 var createdWallet = await _walletRepository.CreateWallet(wallet);
             }
-            var usr = new UserDto{Email = user.Email, UserName = user.Email, Token = _tokenService.CreatToken(user), UserTypes = user.UserTypes};
+            var usr = new UserDto{Email = user.Email, UserName = user.Email, Token = _tokenService.CreatToken(user), 
+            UserTypes = user.UserTypes,FirstName = user.FirstName,LastName=user.LastName,Avatar=user.Avatar};
             return new Result
             {
                 IsSuccessful = true,
@@ -255,7 +292,7 @@ namespace MarkriderAPI.Controllers
                 Message = "Email Verified successfully"
             };
         }
-        [Authorize]
+        //[Authorize]
         [HttpPost("update-user-info")]
         public async Task<ActionResult<Result>> UpdateUserInfo([FromBody]RegisterDto data)
         {
@@ -269,7 +306,7 @@ namespace MarkriderAPI.Controllers
                 Message ="Update successful!"
             };
         }
-        [Authorize]
+        //[Authorize]
         [HttpPut("update-rider-information")]
         public async Task<ActionResult<Result>> UpdateRider([FromBody] RiderDTO data)
         {
@@ -290,7 +327,7 @@ namespace MarkriderAPI.Controllers
             };
            
         }
-         [Authorize]
+         //[Authorize]
         [HttpPut("update-guarantor-information")]
         public async Task<ActionResult<Result>> UpdateRiderGuarantor([FromBody] RiderGuarantorDTO data)
         {

@@ -152,8 +152,8 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("DropOffPhone")
                         .HasColumnType("text");
 
-                    b.Property<int>("FileDataId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("PickUpItems")
                         .HasColumnType("text");
@@ -166,8 +166,6 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("DeliveryId");
 
                     b.HasIndex("DeliveryLocationId");
-
-                    b.HasIndex("FileDataId");
 
                     b.ToTable("DeliveryItems");
                 });
@@ -301,8 +299,8 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("StateId")
-                        .HasColumnType("text");
+                    b.Property<int>("StateId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
@@ -490,7 +488,12 @@ namespace Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Core.Entities.State", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("Code")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -698,17 +701,9 @@ namespace Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Entities.FileData", "FileData")
-                        .WithMany()
-                        .HasForeignKey("FileDataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Delivery");
 
                     b.Navigation("DeliveryLocation");
-
-                    b.Navigation("FileData");
                 });
 
             modelBuilder.Entity("Core.Entities.Identity.AppUser", b =>
@@ -721,7 +716,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasOne("Core.Entities.State", "State")
                         .WithMany("AppUsers")
-                        .HasForeignKey("StateId");
+                        .HasForeignKey("StateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Country");
 

@@ -22,6 +22,7 @@ namespace MarkriderAPI.Extensions
              services.AddScoped<IRiderRepository, RiderRepository>();
              services.AddScoped<IPaymentRepository, PaymentRepository>();
              services.AddScoped<IWalletRepository,WalletRepository>();
+             services.AddScoped<IGeneralRepository,GeneralRepository>();
              services.AddScoped<IUnitOfWork, UnitOfWork>();
              services.AddScoped<ITokenService,TokenService>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));

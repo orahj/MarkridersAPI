@@ -18,7 +18,7 @@ namespace Core.Entities.Identity
         public UserTypes UserTypes {get; set; }
         public DateTime DateRegistered { get; set; }
         public Gender Gender { get; set; }
-        public string StateId { get; set; }
+        public int StateId { get; set; }
         public State State { get; set; }
         public int CountryId { get; set; }
         public Country Country { get; set; }

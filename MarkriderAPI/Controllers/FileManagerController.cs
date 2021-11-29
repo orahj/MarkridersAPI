@@ -48,7 +48,7 @@ namespace MarkriderAPI.Controllers
                 {
                     await httpPostedFile.CopyToAsync(bits);
                 }
-                var url = _config["ApiUrl"] + fileName;
+                var url = _config["ApiUrl"] +"images/temp/" + fileName;
                 response = new Result
                 {
                     IsSuccessful = true,

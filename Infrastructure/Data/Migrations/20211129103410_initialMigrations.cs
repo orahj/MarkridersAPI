@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Data.Migrations
 {
-    public partial class Postgressinitial : Migration
+    public partial class initialMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -122,8 +122,10 @@ namespace Infrastructure.Data.Migrations
                 name: "States",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Code = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -189,7 +191,7 @@ namespace Infrastructure.Data.Migrations
                     PickUpPhone = table.Column<string>(type: "text", nullable: true),
                     DropOffPhone = table.Column<string>(type: "text", nullable: true),
                     DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    FileDataId = table.Column<int>(type: "integer", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
                     DeliveryId = table.Column<int>(type: "integer", nullable: false),
                     DeliveryLocationId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -208,12 +210,6 @@ namespace Infrastructure.Data.Migrations
                         principalTable: "DeliveryLocations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DeliveryItems_FileDatas_FileDataId",
-                        column: x => x.FileDataId,
-                        principalTable: "FileDatas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -230,7 +226,7 @@ namespace Infrastructure.Data.Migrations
                     UserTypes = table.Column<int>(type: "integer", nullable: false),
                     DateRegistered = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Gender = table.Column<int>(type: "integer", nullable: false),
-                    StateId = table.Column<string>(type: "text", nullable: true),
+                    StateId = table.Column<int>(type: "integer", nullable: false),
                     CountryId = table.Column<int>(type: "integer", nullable: false),
                     Percentage = table.Column<int>(type: "integer", nullable: false),
                     UserCategory = table.Column<int>(type: "integer", nullable: false),
@@ -263,7 +259,7 @@ namespace Infrastructure.Data.Migrations
                         column: x => x.StateId,
                         principalTable: "States",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -559,11 +555,6 @@ namespace Infrastructure.Data.Migrations
                 column: "DeliveryLocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliveryItems_FileDataId",
-                table: "DeliveryItems",
-                column: "FileDataId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_AppUserId",
                 table: "Notifications",
                 column: "AppUserId");
@@ -636,6 +627,9 @@ namespace Infrastructure.Data.Migrations
                 name: "DeliveryItems");
 
             migrationBuilder.DropTable(
+                name: "FileDatas");
+
+            migrationBuilder.DropTable(
                 name: "Notifications");
 
             migrationBuilder.DropTable(
@@ -655,9 +649,6 @@ namespace Infrastructure.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "DeliveryLocations");
-
-            migrationBuilder.DropTable(
-                name: "FileDatas");
 
             migrationBuilder.DropTable(
                 name: "Transactions");

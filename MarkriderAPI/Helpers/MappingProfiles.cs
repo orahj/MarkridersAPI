@@ -18,8 +18,7 @@ namespace MarkriderAPI.Helpers
             // CreateMap<DeliveryItem,DeliveryItemDto>()
             //     .ForMember(x =>x.FileURL, o =>o.MapFrom<FileUrlResolver>());
             CreateMap<Delivery,DeliveryReturnDTO>();
-            CreateMap<DeliveryItem,DeliveryItemReturnDTO>()
-                .ForMember(x=>x.ImageUrl, o=> o.MapFrom(s => s.FileData.URL));
+            CreateMap<DeliveryItem,DeliveryItemReturnDTO>();
             CreateMap<DeliveryLocation,DeliveryLocationReturnDTO>();
         }
     }

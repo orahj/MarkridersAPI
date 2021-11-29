@@ -86,7 +86,7 @@ namespace Infrastructure.Data.Implementations
 
                         var deliveryItem = new DeliveryItem(item.PickUpItems,amt.Amount,item.DeliveryTpe,
                         item.DeliveryTime,item.Carriers,
-                        item.PickUpPhone,item.DropOffPhone,item.FileDataId,delivery.Id,location.Id);
+                        item.PickUpPhone,item.DropOffPhone,item.ImageUrl,delivery.Id,location.Id);
                         items.Add(deliveryItem);
                         _unitOfWork.Repository<DeliveryItem>().Add(deliveryItem);
                         await _unitOfWork.Complete();

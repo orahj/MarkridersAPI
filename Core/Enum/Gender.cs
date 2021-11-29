@@ -6,8 +6,8 @@ namespace Core.Enum
     public enum Gender
     {
        [EnumMember(Value = "Male")]
-        Male,
+        Male = 1 ,
       [EnumMember(Value = "Female")]
-        Female
+        Female = 2
     }
 }

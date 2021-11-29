@@ -6,7 +6,7 @@ namespace Core.Enum
     {
         [EnumMember(Value = "Bikes")]
         Bikes = 1,
-        [EnumMember(Value = "Bus")]
+        [EnumMember(Value = "Van")]
         Bus = 2,
         [EnumMember(Value = "Truck")]
         Truck = 3

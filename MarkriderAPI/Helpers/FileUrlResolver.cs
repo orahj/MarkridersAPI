@@ -20,9 +20,9 @@ namespace MarkriderAPI.Helpers
 
         public string Resolve(DeliveryItem source, DeliveryItemReturnDTO destination, string destMember, ResolutionContext context)
         {
-           if(!string.IsNullOrEmpty(source.FileData.URL))
+           if(!string.IsNullOrEmpty(source.ImageUrl))
            {
-               return _config["ApiUrl"] + source.FileData.URL;
+               return source.ImageUrl;
            }
            return null;
         }

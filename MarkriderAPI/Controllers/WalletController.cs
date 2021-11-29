@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MarkriderAPI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class WalletController : BaseAPiController
     {
         private readonly IWalletRepository _walletRepository;

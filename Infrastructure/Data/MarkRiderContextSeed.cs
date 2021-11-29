@@ -8,11 +8,13 @@ using Core.Enum;
 using Microsoft.Extensions.Logging;
 using Core.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Data
 {
     public class MarkRiderContextSeed
     {
+
         public static async Task SeedAsync(MarkRiderContext context, ILoggerFactory loggerFactory)
         {
             try{
@@ -43,44 +45,44 @@ namespace Infrastructure.Data
         {
             var state = new[]
             {
-                new State { Id="AB", Name ="Abia" },
-                new State { Id="AD", Name ="Adamawa" },
-                new State { Id="AK", Name ="Akwa Ibom" },
-                new State { Id="AN", Name ="Anambra" },
-                new State { Id="BA", Name ="Bauchi" },
-                new State { Id="BE", Name ="Benue" },
-                new State { Id="BO", Name ="Borno" },
-                new State { Id="BY", Name ="Bayelsa" },
-                new State { Id="CR", Name ="Cross Rive" },
-                new State { Id="DT", Name ="Delta" },
-                new State { Id="EB", Name ="Ebonyi" },
-                new State { Id="ED", Name ="Edo" },
-                new State { Id="EN", Name ="Enugu" },
-                new State { Id="ET", Name ="Ekiti" },
-                new State { Id="FCT", Name ="Federal Capital Territory" },
-                new State { Id="GM", Name ="Gombe" },
-                new State { Id="IM", Name ="Imo" },
-                new State { Id="JG", Name ="Jigawa" },
-                new State { Id="KB", Name ="Kebbi" },
-                new State { Id="KD", Name ="Kaduna" },
-                new State { Id="KG", Name ="Kogi" },
-                new State { Id="KN", Name ="Kano" },
-                new State { Id="KT", Name ="Katsina" },
-                new State { Id="KW", Name ="Kwara" },
-                new State { Id="LA", Name ="Lagos" },
-                new State { Id="NG", Name ="Niger" },
-                new State { Id="NR", Name ="Nassarawa" },
-                new State { Id="OD", Name ="Ondo" },
-                new State { Id="OG", Name ="Ogun" },
-                new State { Id="OS", Name ="Osun" },
-                new State { Id="OT", Name ="Non-Nigerian" },
-                new State { Id="OY", Name ="Oyo" },
-                new State { Id="PL", Name ="Plateau" },
-                new State { Id="RV", Name ="Rivers" },
-                new State { Id="SO", Name ="Sokoto" },
-                new State { Id="TR", Name ="Taraba" },
-                new State { Id="YB", Name ="Yobe" },
-                new State { Id="ZF", Name ="Zamfara" }
+                new State { Code="AB", Name ="Abia" },
+                new State { Code="AD", Name ="Adamawa" },
+                new State { Code="AK", Name ="Akwa Ibom" },
+                new State { Code="AN", Name ="Anambra" },
+                new State { Code="BA", Name ="Bauchi" },
+                new State { Code="BE", Name ="Benue" },
+                new State { Code="BO", Name ="Borno" },
+                new State { Code="BY", Name ="Bayelsa" },
+                new State { Code="CR", Name ="Cross Rive" },
+                new State { Code="DT", Name ="Delta" },
+                new State { Code="EB", Name ="Ebonyi" },
+                new State { Code="ED", Name ="Edo" },
+                new State { Code="EN", Name ="Enugu" },
+                new State { Code="ET", Name ="Ekiti" },
+                new State { Code="FCT", Name ="Federal Capital Territory" },
+                new State { Code="GM", Name ="Gombe" },
+                new State { Code="IM", Name ="Imo" },
+                new State { Code="JG", Name ="Jigawa" },
+                new State { Code="KB", Name ="Kebbi" },
+                new State { Code="KD", Name ="Kaduna" },
+                new State { Code="KG", Name ="Kogi" },
+                new State { Code="KN", Name ="Kano" },
+                new State { Code="KT", Name ="Katsina" },
+                new State { Code="KW", Name ="Kwara" },
+                new State { Code="LA", Name ="Lagos" },
+                new State { Code="NG", Name ="Niger" },
+                new State { Code="NR", Name ="Nassarawa" },
+                new State { Code="OD", Name ="Ondo" },
+                new State { Code="OG", Name ="Ogun" },
+                new State { Code="OS", Name ="Osun" },
+                new State { Code="OT", Name ="Non-Nigerian" },
+                new State { Code="OY", Name ="Oyo" },
+                new State { Code="PL", Name ="Plateau" },
+                new State { Code="RV", Name ="Rivers" },
+                new State { Code="SO", Name ="Sokoto" },
+                new State { Code="TR", Name ="Taraba" },
+                new State { Code="YB", Name ="Yobe" },
+                new State { Code="ZF", Name ="Zamfara" }
             };
 
             context.States.AddRange(state);
@@ -127,7 +129,7 @@ namespace Infrastructure.Data
         {
             var deliveryItem = new [] 
             {
-                new DeliveryItem{PickUpItems ="Test Data1",DeliveryAmount =5000,DeliveryDate = DateTime.UtcNow,DeliveryTpe = Core.Enum.DeliveryTpe.Single,DeliveryStatus = Core.Enum.DeliveryStatus.Processing,Carriers = Core.Enum.Carriers.Bikes,PickUpPhone ="09069594949",DropOffPhone = "09089786756",DateCreated = DateTime.UtcNow,FileDataId =1, DeliveryId =1,DeliveryLocationId = 1}
+                new DeliveryItem{PickUpItems ="Test Data1",DeliveryAmount =5000,DeliveryDate = DateTime.UtcNow,DeliveryTpe = Core.Enum.DeliveryTpe.Single,DeliveryStatus = Core.Enum.DeliveryStatus.Processing,Carriers = Core.Enum.Carriers.Bikes,PickUpPhone ="09069594949",DropOffPhone = "09089786756",DateCreated = DateTime.UtcNow,ImageUrl ="Test.jpeg", DeliveryId =1,DeliveryLocationId = 1}
             };
             context.DeliveryItems.AddRange(deliveryItem);
              await context.SaveChangesAsync();       

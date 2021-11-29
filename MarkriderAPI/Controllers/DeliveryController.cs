@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MarkriderAPI.Controllers
 {
-   [Authorize]
+   //[Authorize]
     public class DeliveryController : BaseAPiController
     {
         private readonly IMapper _mapper;
