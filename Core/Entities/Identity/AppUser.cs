@@ -24,6 +24,10 @@ namespace Core.Entities.Identity
         public Country Country { get; set; }
         public int Percentage{ get; set; }
         public UserCategory UserCategory { get; set; }
+        public string CompanyName{get;set;}
+        public string RCNumber{get;set;}
+        public string BusinessName{get;set;}
+        public string BusinessNumber{get;set;}
 
     }
 }

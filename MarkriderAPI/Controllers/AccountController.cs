@@ -110,10 +110,12 @@ namespace MarkriderAPI.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
-                if(user == null) return Unauthorized(new ApiResponse(401));
+                //user not found
+                if(user == null) return NotFound(new ApiResponse(404));
 
                 var result = await _signInManager.CheckPasswordSignInAsync(user,loginDto.Password,false);
 
+                //not authorized
                 if(!result.Succeeded) return Unauthorized(new ApiResponse(401));
                 //get states
                 var state = await _generalRepository.GetStateById(user.StateId);
@@ -166,7 +168,6 @@ namespace MarkriderAPI.Controllers
                 IsActive = model.IsActive,
                 UserTypes = model.UserTypes,
                 DateRegistered = DateTime.Now,
-                Gender = model.Gender,
                 StateId = model.State,
                 CountryId = model.Country,
                 UserCategory = model.UserCategory,
@@ -178,14 +179,21 @@ namespace MarkriderAPI.Controllers
                 if(model.UserCategory == Core.Enum.UserCategory.SME)
                 {
                     user.Percentage = 5;
+                    user.BusinessName = model.BusinessName;
+                    user.BusinessNumber = model.BusinessNumber;
+                    user.Gender = Core.Enum.Gender.Male;
                 }
                 if(model.UserCategory == Core.Enum.UserCategory.Company)
                 {
                     user.Percentage = 10;
+                    user.CompanyName = model.CompanyName;
+                    user.RCNumber = model.RCNumber;
+                    user.Gender = Core.Enum.Gender.Male;
                 }
                 if(model.UserCategory == Core.Enum.UserCategory.Individual)
                 {
                     user.Percentage = 1;
+                    user.Gender = model.Gender;
                 }
             }
             var res = await _userManager.CreateAsync(user,model.Password);

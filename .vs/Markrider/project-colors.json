@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "ef98986a-a01f-4bd0-9a55-475f37525d6b": {
+      "ProjectGuid": "ef98986a-a01f-4bd0-9a55-475f37525d6b",
+      "DisplayName": "MarkriderAPI",
+      "ColorIndex": 0
+    },
+    "d4628943-3e72-4b68-8e10-9e419a3911eb": {
+      "ProjectGuid": "d4628943-3e72-4b68-8e10-9e419a3911eb",
+      "DisplayName": "Core",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}

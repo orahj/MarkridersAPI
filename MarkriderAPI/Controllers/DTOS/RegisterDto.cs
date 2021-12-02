@@ -36,5 +36,9 @@ namespace MarkriderAPI.Controllers.DTOS
         public string Phone{get;set;}
         public UserCategory UserCategory { get; set; }
         public string RiderCardNo { get; set; }
+        public string CompanyName{get;set;}
+        public string RCNumber{get;set;}
+        public string BusinessName{get;set;}
+        public string BusinessNumber{get;set;}
     }
 }
