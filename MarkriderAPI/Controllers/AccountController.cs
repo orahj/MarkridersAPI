@@ -229,7 +229,7 @@ namespace MarkriderAPI.Controllers
 
         [HttpPost("send-password-resetLink")]
         [AllowAnonymous]
-        public async Task<ActionResult<Result>> SendPasswordResetLink([FromBody]PasswordDataDto data)
+        public async Task<ActionResult<Result>> SendPasswordResetLink([FromBody] SendPasswordResetDto data)
         {
              var user = await _userManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound(new ApiResponse(404));
@@ -251,7 +251,7 @@ namespace MarkriderAPI.Controllers
 
         [HttpPost("reset-password")]
         [AllowAnonymous]
-        public async Task<ActionResult<Result>> ResetPassword([FromBody]PasswordDataDto data)
+        public async Task<ActionResult<Result>> ResetPassword([FromBody] ResetPasswordResetDto data)
         {
             var user = await _userManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound(new ApiResponse(404));

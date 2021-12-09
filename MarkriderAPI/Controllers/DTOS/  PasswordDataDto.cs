@@ -15,4 +15,14 @@ namespace MarkriderAPI.Controllers.DTOS
         public string OperatingSystem { get; set; }
         public string Token { get; set; }
     }
+    public class SendPasswordResetDto 
+    {
+        public string Email { get; set; }
+    }
+    public class ResetPasswordResetDto
+    {
+        public string Token { get; set; }
+        public string NewPassword { get; set; }
+        public string Email { get; set; }
+    }
 }
