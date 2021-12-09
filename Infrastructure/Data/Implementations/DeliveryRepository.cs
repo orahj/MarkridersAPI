@@ -46,6 +46,10 @@ namespace Infrastructure.Data.Implementations
                     //get distance amount
                    
                     var amounts = await _unitOfWork.Repository<DeliveryDistance>().ListAllAsync();
+                    //TODO
+                    //base fair 300 naira for bikes
+                    //100 naira per kilometer plus base fair
+                    //amount = kilometer * 100 + 300
                      var amt = new DeliveryDistance();
                     if(distanceToCover <= 20)
                     {

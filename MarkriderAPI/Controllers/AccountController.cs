@@ -82,7 +82,7 @@ namespace MarkriderAPI.Controllers
             };
         }
         [HttpGet("get-states")]
-        public async Task<ActionResult<Result>> GetStates([FromQuery] string email)
+        public async Task<ActionResult<Result>> GetStates()
         {
             var states = await _generalRepository.GetState();
             return new Result
@@ -93,7 +93,7 @@ namespace MarkriderAPI.Controllers
             };
         }
         [HttpGet("get-countries")]
-        public async Task<ActionResult<Result>> GetCountries([FromQuery] string email)
+        public async Task<ActionResult<Result>> GetCountries()
         {
             var countries = await _generalRepository.GetCountry();
             return new Result
