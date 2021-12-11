@@ -58,13 +58,8 @@ namespace MarkriderAPI.Email.Implementations
 
         public async Task<Result> SendWelcomeMailAsync(AppUser user, string link)
         {
-            //string template = await GetTemplate("Welcome.html");
-            string template = @"<table style=""width:100%;""> 
-     <tr> 
-       <td style=""width:20%; background-color:Blue;"">{{URL}}</td> 
-       <td style=""width:80%; background-color:Green;"">{{Name}}</td> 
-     </tr> 
-    </table>";
+            string template = await GetTemplate("Welcome.html");
+            
             string mailBody = template.Replace("{{Name}}", user.Email)
                                       .Replace("{{URL}}", link);
 
