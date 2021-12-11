@@ -35,7 +35,7 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             var appUser = await _userManager.FindByEmailAsync(data.Email);
-            data.UserId = appUser.Id;
+            data.UserId = appUser.Id.ToString();
             var fundWallet = _walletRepository.FundWallet(data);
            return Ok(fundWallet);
         }
@@ -48,7 +48,7 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             var appUser = await _userManager.FindByEmailAsync(data.Email);
-            data.UserId = appUser.Id;
+            data.UserId = appUser.Id.ToString();
             var payment = _walletRepository.FundPaymentWallet(data);
            return Ok(payment);
         }
@@ -64,7 +64,7 @@ namespace MarkriderAPI.Controllers
             }
             var appUser = await _userManager.FindByEmailAsync(userEmail);
             if(appUser == null) return NotFound(new ApiResponse(404));
-            var walletTransaction = await _walletRepository.GetUserWalletTransactions(appUser.Id);
+            var walletTransaction = await _walletRepository.GetUserWalletTransactions(appUser.Id.ToString());
             return Ok(walletTransaction);
         }
 
@@ -78,7 +78,7 @@ namespace MarkriderAPI.Controllers
             }
             var appUser = await _userManager.FindByEmailAsync(userEmail);
             if(appUser == null) return NotFound(new ApiResponse(404));
-            var walletBalance = await _walletRepository.GetWalletBalance(appUser.Id);
+            var walletBalance = await _walletRepository.GetWalletBalance(appUser.Id.ToString());
             return Ok(walletBalance);
         }
 

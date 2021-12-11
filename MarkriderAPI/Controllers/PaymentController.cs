@@ -38,7 +38,7 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             var appUser = await _userManager.FindByEmailAsync(paystackSubscriptionRequest.Email);
-            paystackSubscriptionRequest.UserId = appUser.Id;
+            paystackSubscriptionRequest.UserId = appUser.Id.ToString();
             var payment = await _payment.VerifyPaystackTransFirstTime(paystackSubscriptionRequest);
             return Ok(payment);
         }
@@ -62,7 +62,7 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             var appUser = await _userManager.FindByEmailAsync(data.Email);
-            data.UserId = appUser.Id;
+            data.UserId = appUser.Id.ToString();
             var transfer = _payment.TransferPayment(data);
             return Ok(transfer);
         }

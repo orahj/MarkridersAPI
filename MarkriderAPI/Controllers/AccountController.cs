@@ -11,6 +11,7 @@ using Core.Entities.Identity;
 using Core.Interfaces;
 using MarkriderAPI.Controllers.DTOS;
 using MarkriderAPI.Controllers.errors;
+using MarkriderAPI.Email.Interfaces;
 using MarkriderAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -30,12 +31,14 @@ namespace MarkriderAPI.Controllers
         private readonly IRiderGuarantorRepository _riderGuarantorRepository;
         private readonly IRiderRepository _riderRepository;
         private readonly IWalletRepository _walletRepository;
+        private readonly IEmailService _emailService;
         private readonly IGeneralRepository _generalRepository;
 
         public AccountController(ILogger<AccountController> logger, UserManager<AppUser> userManager,
          SignInManager<AppUser> signInManager,
           ITokenService tokenService, IConfiguration config,
           IRiderGuarantorRepository riderGuarantorRepository, 
+          IEmailService emailService,
           IRiderRepository riderRepository,IWalletRepository walletRepository,IGeneralRepository generalRepository )
         {
             _riderGuarantorRepository = riderGuarantorRepository;
@@ -47,6 +50,7 @@ namespace MarkriderAPI.Controllers
             _riderRepository = riderRepository;
             _walletRepository = walletRepository;
             _generalRepository = generalRepository;
+            _emailService = emailService;
         }
         //[Authorize]
         [HttpGet("current-user")]
@@ -58,7 +62,7 @@ namespace MarkriderAPI.Controllers
                 Email = user.Email,
                 Token = _tokenService.CreatToken(user),
                 UserName = user.Email,
-                Id = user.Id,
+                Id = user.Id.ToString(),
                 State = user.State.Name,
                 Country = user.Country.Name,
                 FirstName = user.FirstName,
@@ -127,7 +131,7 @@ namespace MarkriderAPI.Controllers
                     Email = user.Email,
                     Token = _tokenService.CreatToken(user),
                     UserName = user.Email,
-                    Id = user.Id,
+                    Id = user.Id.ToString(),
                     UserTypes = user.UserTypes,
                     FirstName = user.FirstName,
                     LastName=user.LastName,
@@ -206,7 +210,7 @@ namespace MarkriderAPI.Controllers
             if(model.UserTypes == Core.Enum.UserTypes.Riders)
             {
                 //create rider 
-                var rider = new RiderDTO{AppUserId = user.Id};
+                var rider = new RiderDTO{AppUserId = user.Id.ToString()};
                 var createdRider = await _riderRepository.CreateRiderAsync(rider);
                 var riderGuarantor = new RiderGuarantorDTO {RiderId = createdRider.Id};
                 var createdRiderGuarator = await _riderGuarantorRepository.CreateRiderGuarantorAsync(riderGuarantor);
@@ -214,11 +218,18 @@ namespace MarkriderAPI.Controllers
             //create wallet
             if(model.UserTypes == Core.Enum.UserTypes.Users)
             {
-                var wallet = new CreateWalletDTO(user.Id,0,0,true);
+                var wallet = new CreateWalletDTO(user.Id.ToString(),0,0,true);
                 var createdWallet = await _walletRepository.CreateWallet(wallet);
             }
             var usr = new UserDto{Email = user.Email, UserName = user.Email, Token = _tokenService.CreatToken(user), 
             UserTypes = user.UserTypes,FirstName = user.FirstName,LastName=user.LastName,Avatar=user.Avatar};
+
+            //send emails
+            var token = WebUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user));
+
+            var verifyUrl = $"{_config["EmailConfig:VerificationEndPoint"]}?token={token}&Email={user.Email}";
+            await _emailService.SendWelcomeMailAsync(user, verifyUrl);
+
             return new Result
             {
                 IsSuccessful = true,
@@ -236,9 +247,11 @@ namespace MarkriderAPI.Controllers
             var token = WebUtility.UrlEncode(await _userManager.GeneratePasswordResetTokenAsync(user));
              var resetPasswordUrl = $"{_config["EmailConfig:ResetPasswordEndPoint"]}?token={token}&Email={data.Email}";
 
-             //call email service
-
-             //pepare object to send 
+            //call email service
+            var browserName = HttpContext.Request.Headers.ContainsKey("User-Agent") ? HttpContext.Request.Headers["User-Agent"].ToString() : null;
+            var operatingSystem = Environment.OSVersion.ToString();
+            await _emailService.SendPasswordResetMailAsync(user, resetPasswordUrl,"",operatingSystem,browserName);
+            //pepare object to send 
 
             var p = new PasswordResetResponseDto{Url = resetPasswordUrl};
             return new Result
@@ -272,8 +285,8 @@ namespace MarkriderAPI.Controllers
             if (user == null) return NotFound(new ApiResponse(404));
              var token = WebUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user));
 
-            var verifyUrl = $"{_config["EmailConfig:VerificationEndPoint"]}?token={token}&Email={data.Email}";
-
+             var verifyUrl = $"{_config["EmailConfig:VerificationEndPoint"]}?token={token}&Email={data.Email}";
+            await _emailService.SendWelcomeMailAsync(user, verifyUrl);
             //send email
             var url = new EmailVeriyResponseDto{Url = verifyUrl};
             return new Result

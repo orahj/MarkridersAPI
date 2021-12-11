@@ -14,6 +14,9 @@ using MarkriderAPI.Helpers;
 using MarkriderAPI.MIddleware;
 using MarkriderAPI.Controllers.errors;
 using MarkriderAPI.Extensions;
+using Core.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
+using Core.DTOs.EmailDto;
 
 namespace MarkriderAPI
 {
@@ -34,7 +37,9 @@ namespace MarkriderAPI
             services.AddIdentityServices(_config);
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddControllers();
-             services.AddDbContext<MarkRiderContext>(options => 
+            services.Configure<EmailConfig>(_config.GetSection("EmailConfig"));
+            services.Configure<EmailRecipient>(_config.GetSection("EmailRecipient"));
+            services.AddDbContext<MarkRiderContext>(options => 
                 {
                      var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
@@ -71,6 +76,21 @@ namespace MarkriderAPI
             options.UseNpgsql(connStr);
                 }
                 );
+            services.AddIdentity<AppUser, AspNetRole>(options =>
+            {
+                options.User.RequireUniqueEmail = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Lockout.MaxFailedAccessAttempts = 4;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+            })
+            .AddEntityFrameworkStores<MarkRiderContext>()
+            .AddDefaultTokenProviders()
+            .AddRoleStore<ApplicationRoleStore>()
+            .AddUserStore<ApplicationUserStore>();
 
             services.AddSwaggerDocumentation();
             services.AddCors( opt => {

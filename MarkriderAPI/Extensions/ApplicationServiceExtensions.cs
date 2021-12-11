@@ -7,6 +7,8 @@ using Infrastructure.Data;
 using Infrastructure.Data.Implementations;
 using Infrastructure.Services;
 using MarkriderAPI.Controllers.errors;
+using MarkriderAPI.Email.Implementations;
+using MarkriderAPI.Email.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,9 +26,11 @@ namespace MarkriderAPI.Extensions
              services.AddScoped<IWalletRepository,WalletRepository>();
              services.AddScoped<IGeneralRepository,GeneralRepository>();
              services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IMailClient, MailClient>();
              services.AddScoped<ITokenService,TokenService>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
-              services.Configure<ApiBehaviorOptions>(option =>{
+            services.Configure<ApiBehaviorOptions>(option =>{
                 option.InvalidModelStateResponseFactory = actionContext =>{
 
                     var errors =actionContext.ModelState

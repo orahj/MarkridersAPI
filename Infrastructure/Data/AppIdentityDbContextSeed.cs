@@ -14,6 +14,7 @@ namespace Infrastructure.Data
         {
             if(!userManager.Users.Any())
             {
+                const string superUserRole = "superuser";
                 var user =  new AppUser
                 {
                     UserName ="test@markrider@gmail.com",
@@ -30,9 +31,13 @@ namespace Infrastructure.Data
                     CountryId = 1
                 };
                 await userManager.CreateAsync(user,"P@$$w0rd");
-            
+                await AddDefaultRoleToDefaultUser(userManager, superUserRole, user);
             }
             
+        }
+        private static async Task AddDefaultRoleToDefaultUser(UserManager<AppUser> userManager, string administratorRole, AppUser user)
+        {
+            await userManager.AddToRoleAsync(user, administratorRole);
         }
     }
 }

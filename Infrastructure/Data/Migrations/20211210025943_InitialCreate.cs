@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Data.Migrations
 {
-    public partial class initialMigrations : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -31,7 +31,7 @@ namespace Infrastructure.Data.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
@@ -138,7 +138,7 @@ namespace Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
@@ -216,7 +216,7 @@ namespace Infrastructure.Data.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: true),
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
@@ -230,6 +230,10 @@ namespace Infrastructure.Data.Migrations
                     CountryId = table.Column<int>(type: "integer", nullable: false),
                     Percentage = table.Column<int>(type: "integer", nullable: false),
                     UserCategory = table.Column<int>(type: "integer", nullable: false),
+                    CompanyName = table.Column<string>(type: "text", nullable: true),
+                    RCNumber = table.Column<string>(type: "text", nullable: true),
+                    BusinessName = table.Column<string>(type: "text", nullable: true),
+                    BusinessNumber = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -268,7 +272,7 @@ namespace Infrastructure.Data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
@@ -290,7 +294,7 @@ namespace Infrastructure.Data.Migrations
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     ProviderKey = table.Column<string>(type: "text", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -307,8 +311,8 @@ namespace Infrastructure.Data.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -331,7 +335,7 @@ namespace Infrastructure.Data.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: true)
@@ -354,6 +358,7 @@ namespace Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AppUserId = table.Column<string>(type: "text", nullable: false),
+                    AppUserId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Read = table.Column<bool>(type: "boolean", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -363,11 +368,11 @@ namespace Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notifications_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Notifications_AspNetUsers_AppUserId1",
+                        column: x => x.AppUserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -377,6 +382,7 @@ namespace Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AppUserId = table.Column<string>(type: "text", nullable: false),
+                    AppUserId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     PaymentMethod = table.Column<int>(type: "integer", nullable: false),
                     SerialNumber = table.Column<string>(type: "text", nullable: true),
                     InvoiceNumber = table.Column<string>(type: "text", nullable: true),
@@ -390,11 +396,11 @@ namespace Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Payments_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Payments_AspNetUsers_AppUserId1",
+                        column: x => x.AppUserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Payments_Transactions_TransactionId",
                         column: x => x.TransactionId,
@@ -410,6 +416,7 @@ namespace Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AppUserId = table.Column<string>(type: "text", nullable: false),
+                    AppUserId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     AccountNumber = table.Column<string>(type: "text", nullable: true),
                     BankCode = table.Column<string>(type: "text", nullable: true),
                     BVN = table.Column<string>(type: "text", nullable: true),
@@ -419,11 +426,11 @@ namespace Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Riders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Riders_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Riders_AspNetUsers_AppUserId1",
+                        column: x => x.AppUserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -433,6 +440,7 @@ namespace Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AppUserId = table.Column<string>(type: "text", nullable: false),
+                    AppUserId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     Balance = table.Column<decimal>(type: "numeric", nullable: false),
                     LastSpend = table.Column<decimal>(type: "numeric", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
@@ -441,11 +449,11 @@ namespace Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Wallets", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Wallets_AspNetUsers_AppUserId",
-                        column: x => x.AppUserId,
+                        name: "FK_Wallets_AspNetUsers_AppUserId1",
+                        column: x => x.AppUserId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -555,14 +563,14 @@ namespace Infrastructure.Data.Migrations
                 column: "DeliveryLocationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_AppUserId",
+                name: "IX_Notifications_AppUserId1",
                 table: "Notifications",
-                column: "AppUserId");
+                column: "AppUserId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Payments_AppUserId",
+                name: "IX_Payments_AppUserId1",
                 table: "Payments",
-                column: "AppUserId");
+                column: "AppUserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_TransactionId",
@@ -575,9 +583,9 @@ namespace Infrastructure.Data.Migrations
                 column: "RiderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Riders_AppUserId",
+                name: "IX_Riders_AppUserId1",
                 table: "Riders",
-                column: "AppUserId");
+                column: "AppUserId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RidersDeliveries_DeliveryID",
@@ -595,9 +603,9 @@ namespace Infrastructure.Data.Migrations
                 column: "DeliveriesId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Wallets_AppUserId",
+                name: "IX_Wallets_AppUserId1",
                 table: "Wallets",
-                column: "AppUserId");
+                column: "AppUserId1");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

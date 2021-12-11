@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Core.Entities.Identity
 {
-    public class AppUser : IdentityUser
+    public class AppUser : IdentityUser<Guid>
     {
         public byte[] PasswordSalt { get; set; }
         public string FirstName { get; set; }

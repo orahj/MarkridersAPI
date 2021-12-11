@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Infrastructure.Data
 {
-    public class MarkRiderContext : IdentityDbContext<AppUser>
+    public class MarkRiderContext : IdentityDbContext<AppUser,AspNetRole,Guid,AspNetUserClaim,AspNetUserRole,AspNetUserLogin,AspNetRoleClaim,AspNetUserToken>
     {
         public MarkRiderContext(DbContextOptions options) : base(options)
         {
