@@ -20,9 +20,9 @@ namespace MarkriderAPI.Controllers.errors
         {
             return statusCode switch
             {
-                400 => "A bad request, you have made",
-                401 => "Authorized, you are not",
-                404 => "Resource was not found",
+                400 => "Bad request! Please check the parameter passed!!",
+                401 => "You are not authorized!",
+                404 => "Resource was not found!",
                 500 => "Server error!",
                 _ => null
             };

@@ -31,8 +31,13 @@ namespace MarkriderAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(opt => {
+                opt.AddPolicy("CorsPolicy", policy => {
+                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:8100");
+                });
+            });
             services.AddControllers().AddNewtonsoftJson(options => 
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddApplicationService();
             services.AddIdentityServices(_config);
             services.AddAutoMapper(typeof(MappingProfiles));
@@ -93,11 +98,7 @@ namespace MarkriderAPI
             .AddUserStore<ApplicationUserStore>();
 
             services.AddSwaggerDocumentation();
-            services.AddCors( opt => {
-                opt.AddPolicy("CorsPolicy", policy =>{
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:8100");
-                });
-            });
+          
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

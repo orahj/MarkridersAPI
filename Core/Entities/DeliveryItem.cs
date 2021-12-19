@@ -34,7 +34,6 @@ namespace Core.Entities
         public Carriers Carriers { get; set; }
         public string PickUpPhone { get; set; }
         public string DropOffPhone { get; set; }
-        public DateTimeOffset DateCreated {get; set;} = DateTimeOffset.Now;
         public string ImageUrl {get;set;}
         public int DeliveryId{ get; set; }
         public Delivery Delivery {get;set;}

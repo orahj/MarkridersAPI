@@ -25,7 +25,6 @@ namespace Core.Entities
         [Required]
         public string Email { get; set; }
         public decimal TotalAmount { get; set; }
-        public DateTimeOffset DateCreated { get; set; } = DateTimeOffset.Now;
         public virtual IReadOnlyList<DeliveryItem> DeliveryItems { get; set; }
 
         public decimal  GetTotal()

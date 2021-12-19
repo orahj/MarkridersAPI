@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using Core.DTOs;
 using Core.DTOs.Wallet;
 using Core.Entities.Identity;
@@ -33,13 +34,14 @@ namespace MarkriderAPI.Controllers
         private readonly IWalletRepository _walletRepository;
         private readonly IEmailService _emailService;
         private readonly IGeneralRepository _generalRepository;
+        
 
         public AccountController(ILogger<AccountController> logger, UserManager<AppUser> userManager,
          SignInManager<AppUser> signInManager,
           ITokenService tokenService, IConfiguration config,
           IRiderGuarantorRepository riderGuarantorRepository, 
           IEmailService emailService,
-          IRiderRepository riderRepository,IWalletRepository walletRepository,IGeneralRepository generalRepository )
+          IRiderRepository riderRepository,IWalletRepository walletRepository,IGeneralRepository generalRepository)
         {
             _riderGuarantorRepository = riderGuarantorRepository;
             _config = config;
@@ -267,6 +269,7 @@ namespace MarkriderAPI.Controllers
         public async Task<ActionResult<Result>> ResetPassword([FromBody] ResetPasswordResetDto data)
         {
             var user = await _userManager.FindByEmailAsync(data.Email);
+            data.Token  = HttpUtility.UrlDecode(data.Token);
             if (user == null) return NotFound(new ApiResponse(404));
              var result = await _userManager.ResetPasswordAsync(user, data.Token, data.NewPassword);
              if(!result.Succeeded) return BadRequest(new ApiResponse(400));

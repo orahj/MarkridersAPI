@@ -17,7 +17,6 @@ namespace Core.Entities
         public AppUser AppUser { get; set; }
         public NotificationType Type { get; set; }
         public bool Read { get; set; }
-        public DateTime DateCreated { get; set; }
         public string DataJson
         {
             get { return JsonConvert.SerializeObject(Data); }

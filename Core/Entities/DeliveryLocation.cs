@@ -29,7 +29,6 @@ namespace Core.Entities
          public double YLogitude { get; set; }
         public double YLatitude { get; set; }
          public string TargetAddress { get; set; }
-        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         public IReadOnlyList<DeliveryItem> DeliveryItems{get;set;}
     }
 }

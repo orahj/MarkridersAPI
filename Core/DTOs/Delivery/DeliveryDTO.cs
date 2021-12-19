@@ -21,4 +21,10 @@ namespace Core.DTOs.Delivery
         public DateTimeOffset DateCreated { get; set; }
         public virtual IReadOnlyList<DeliveryItemReturnDTO> DeliveryItems { get; set; }
     }
+    public class DeliveryDetailDTO
+    {
+        public string AppUserId { get; set; }
+        public int DeliveriesId { get; set; }
+        public string Reason { get; set; }
+    }
 }

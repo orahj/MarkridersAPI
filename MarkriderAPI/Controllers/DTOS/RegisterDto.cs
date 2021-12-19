@@ -28,7 +28,7 @@ namespace MarkriderAPI.Controllers.DTOS
         public UserTypes UserTypes {get; set; }
         public Gender Gender { get; set; }
         [Required]
-        public int State { get; set; }
+        public int State { get; set; } 
         [Required]
         public int Country { get; set; }
         public string Phone{get;set;}

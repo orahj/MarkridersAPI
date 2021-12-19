@@ -15,6 +15,8 @@ namespace Core.Enum
           [EnumMember(Value = "Delivered")]
           Delivered = 5,
           [EnumMember(Value = "Disputed")]
-          Disputed = 6
+          Disputed = 6,
+        [EnumMember(Value = "Canceled")]
+        Canceled = 7
     }
 }

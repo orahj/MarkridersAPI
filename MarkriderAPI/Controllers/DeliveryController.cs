@@ -26,11 +26,12 @@ namespace MarkriderAPI.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IDeliveryRepository _repo;
-
-        public DeliveryController(IMapper mapper, IDeliveryRepository repo)
+        private readonly IDeliveryDetailsRepository _deliveryDetailsRepository;
+        public DeliveryController(IMapper mapper, IDeliveryRepository repo, IDeliveryDetailsRepository deliveryDetailsRepository)
         {
             _mapper = mapper;
             _repo = repo;
+            _deliveryDetailsRepository = deliveryDetailsRepository;
         }
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveries(string sort, string email,[FromQuery] SpecParams specParams)
@@ -115,7 +116,6 @@ namespace MarkriderAPI.Controllers
            return Ok(res);
         }
 
-        [Authorize]
         [HttpPost("create-delivery")]
         public async Task<ActionResult<Result>> CreateDelivery(DeliveryDTO deliveryDto)
         {
@@ -134,6 +134,32 @@ namespace MarkriderAPI.Controllers
         {
            var res = await _repo.GetDeliveryDistanceByIdAsync(id);
            return Ok(res);
+        }
+        [HttpPost("cancel-delivery")]
+        public async Task<ActionResult<Result>> CancelDelivery(DeliveryDetailDTO deliveryDto)
+        {
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var delivery = await _deliveryDetailsRepository.CancelDeliveryAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
+
+            return new Result
+            {
+                IsSuccessful = true,
+                Message = "Delivery canceled successfully"
+            };
+        }
+        [HttpPost("asign-delivery")]
+        public async Task<ActionResult<Result>> AsignDelivery(DeliveryDetailDTO deliveryDto)
+        {
+            var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var delivery = await _deliveryDetailsRepository.AsignDeliveryAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
+
+            return new Result
+            {
+                IsSuccessful = true,
+                Message = "Delivery successfully asigned!"
+            };
         }
     }
 }

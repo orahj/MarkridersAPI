@@ -13,7 +13,6 @@ namespace Core.Entities
         public double? Amount { get; set; }
         public double? Rate { get; set; }
         public int? CreatedBy { get; set; }
-        public DateTime? DateCreated { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
     }
 }
