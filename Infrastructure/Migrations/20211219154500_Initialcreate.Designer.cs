@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace Infrastructure.Data.Migrations
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MarkRiderContext))]
-    [Migration("20211210025943_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211219154500_Initialcreate")]
+    partial class Initialcreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,8 +34,11 @@ namespace Infrastructure.Data.Migrations
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool?>("IsFixed")
                         .HasColumnType("boolean");
@@ -61,6 +64,12 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
 
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -79,6 +88,9 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("DateCreated")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("DeliveryNo")
                         .IsRequired()
                         .HasColumnType("text");
@@ -95,6 +107,52 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Deliveries");
                 });
 
+            modelBuilder.Entity("Core.Entities.DeliveryDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("AppUserId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CancelReason")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DeliveriesId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsCanceled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("RatingId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RatingsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId1");
+
+                    b.HasIndex("DeliveriesId");
+
+                    b.HasIndex("RatingsId");
+
+                    b.ToTable("DeliveryDetails");
+                });
+
             modelBuilder.Entity("Core.Entities.DeliveryDistance", b =>
                 {
                     b.Property<int>("Id")
@@ -104,6 +162,12 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Distance")
                         .HasColumnType("integer");
@@ -125,6 +189,9 @@ namespace Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<decimal>("DeliveryAmount")
@@ -182,8 +249,11 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("BaseAddress")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<double>("DeliveryDistance")
                         .HasColumnType("double precision");
@@ -214,6 +284,12 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
@@ -346,30 +422,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetRoleClaims", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetRoleClaims");
-                });
-
-            modelBuilder.Entity("Core.Entities.Identity.AspNetRoles", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetRole", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -396,7 +449,30 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserClaims", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetRoleClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetRoleClaims");
+                });
+
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -419,7 +495,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserClaims");
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserLogins", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("text");
@@ -440,7 +516,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserLogins");
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserRoles", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -455,7 +531,7 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserRoles");
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserTokens", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserToken", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -491,8 +567,11 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("DataJson")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Read")
                         .HasColumnType("boolean");
@@ -520,6 +599,12 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<Guid?>("AppUserId1")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InvoiceNumber")
                         .HasColumnType("text");
@@ -554,6 +639,39 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("Payments");
                 });
 
+            modelBuilder.Entity("Core.Entities.Ratings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("AppUserId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RatingNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId1");
+
+                    b.ToTable("Ratings");
+                });
+
             modelBuilder.Entity("Core.Entities.Rider", b =>
                 {
                     b.Property<int>("Id")
@@ -577,6 +695,12 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("BankCode")
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("ValidID")
                         .HasColumnType("text");
 
@@ -593,6 +717,12 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
@@ -623,6 +753,12 @@ namespace Infrastructure.Data.Migrations
                     b.Property<DateTime>("DateAsigned")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("DeliveryID")
                         .HasColumnType("integer");
 
@@ -648,6 +784,12 @@ namespace Infrastructure.Data.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -671,6 +813,9 @@ namespace Infrastructure.Data.Migrations
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("DeliveriesId")
                         .HasColumnType("integer");
@@ -699,6 +844,12 @@ namespace Infrastructure.Data.Migrations
                     b.Property<decimal>("Balance")
                         .HasColumnType("numeric");
 
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DateModified")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -710,6 +861,29 @@ namespace Infrastructure.Data.Migrations
                     b.HasIndex("AppUserId1");
 
                     b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("Core.Entities.DeliveryDetails", b =>
+                {
+                    b.HasOne("Core.Entities.Identity.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId1");
+
+                    b.HasOne("Core.Entities.Delivery", "Deliveries")
+                        .WithMany()
+                        .HasForeignKey("DeliveriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Ratings", "Ratings")
+                        .WithMany()
+                        .HasForeignKey("RatingsId");
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Deliveries");
+
+                    b.Navigation("Ratings");
                 });
 
             modelBuilder.Entity("Core.Entities.DeliveryItem", b =>
@@ -750,16 +924,16 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("State");
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetRoleClaims", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetRoleClaim", b =>
                 {
-                    b.HasOne("Core.Entities.Identity.AspNetRoles", null)
+                    b.HasOne("Core.Entities.Identity.AspNetRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserClaims", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserClaim", b =>
                 {
                     b.HasOne("Core.Entities.Identity.AppUser", null)
                         .WithMany()
@@ -768,7 +942,7 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserLogins", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserLogin", b =>
                 {
                     b.HasOne("Core.Entities.Identity.AppUser", null)
                         .WithMany()
@@ -777,9 +951,9 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserRoles", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserRole", b =>
                 {
-                    b.HasOne("Core.Entities.Identity.AspNetRoles", null)
+                    b.HasOne("Core.Entities.Identity.AspNetRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -792,7 +966,7 @@ namespace Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Core.Entities.Identity.AspNetUserTokens", b =>
+            modelBuilder.Entity("Core.Entities.Identity.AspNetUserToken", b =>
                 {
                     b.HasOne("Core.Entities.Identity.AppUser", null)
                         .WithMany()
@@ -823,6 +997,15 @@ namespace Infrastructure.Data.Migrations
                     b.Navigation("AppUser");
 
                     b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Core.Entities.Ratings", b =>
+                {
+                    b.HasOne("Core.Entities.Identity.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("AppUserId1");
+
+                    b.Navigation("AppUser");
                 });
 
             modelBuilder.Entity("Core.Entities.Rider", b =>
