@@ -386,5 +386,25 @@ namespace MarkriderAPI.Controllers
 
             var result = await _userManager.UpdateAsync(user);
         }
+        [HttpPut("rider-online-status")]
+        public async Task<ActionResult<Result>> OnlineStatus([FromBody] RiderStatusDTO data)
+        {
+            var updateRider = await _riderRepository.ChangeStatus(data);
+            if (updateRider)
+            {
+                return new Result
+                {
+                    IsSuccessful = true,
+                    Message = "Rider Information updated successfully!"
+                };
+            }
+
+            return new Result
+            {
+                IsSuccessful = false,
+                Message = "Rider not found!"
+            };
+
+        }
     }
 }

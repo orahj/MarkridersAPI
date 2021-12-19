@@ -17,6 +17,19 @@ namespace Infrastructure.Data.Implementations
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<bool> ChangeStatus(RiderStatusDTO riderStatusDTO)
+        {
+            var spec = new RiderSpec(riderStatusDTO.UserId);
+            var riderInfo = await _unitOfWork.Repository<Rider>().GetEntityWithSpec(spec);
+            if (riderInfo == null) return false;
+
+            riderInfo.RiderStatus = riderStatusDTO.Status;
+            _unitOfWork.Repository<Rider>().Update(riderInfo);
+            await _unitOfWork.Complete();
+            return true;
+
+        }
+
         public async Task<Rider> CreateRiderAsync(RiderDTO model)
         {
             var rider = new Rider(model.AppUserId);

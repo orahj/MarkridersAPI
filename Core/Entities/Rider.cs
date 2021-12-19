@@ -32,6 +32,7 @@ namespace Core.Entities
         public string BankCode{get;set;}
         public string BVN{get;set;}
          public string ValidID { get; set; }
+        public bool RiderStatus { get; set; }
 
     }
 }
