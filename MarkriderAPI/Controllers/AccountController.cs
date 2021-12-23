@@ -178,7 +178,8 @@ namespace MarkriderAPI.Controllers
                 StateId = model.State,
                 CountryId = model.Country,
                 UserCategory = model.UserCategory,
-                Avatar = url
+                Avatar = url,
+                PhoneNumber = model.Phone
             };
             //check for user type and category
             if(model.UserTypes == Core.Enum.UserTypes.Users)
