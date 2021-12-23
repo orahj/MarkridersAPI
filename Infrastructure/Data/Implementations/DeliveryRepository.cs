@@ -216,5 +216,10 @@ namespace Infrastructure.Data.Implementations
             var spec = new DeliveryItemSpecification(Id,deliveryId);
             return await _unitOfWork.Repository<DeliveryItem>().GetEntityWithSpec(spec);
         }
+
+        public async Task<IReadOnlyList<DeliveryCancelationReasons>> GetCancelationReasonsAsync()
+        {
+           return await _unitOfWork.Repository<DeliveryCancelationReasons>().ListAllAsync();
+        }
     }
 }

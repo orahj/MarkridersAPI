@@ -148,7 +148,7 @@ namespace MarkriderAPI.Controllers
               ReturnedObject = _mapper.Map<Delivery,DeliveryReturnDTO>(delivery)
            };
         }
-         [HttpGet("delivery-transactions/{id}")]
+        [HttpGet("delivery-transactions/{id}")]
         public async Task<ActionResult> GetDeliveryTransactionsByID(int id)
         {
            var res = await _repo.GetDeliveryDistanceByIdAsync(id);
@@ -189,6 +189,12 @@ namespace MarkriderAPI.Controllers
                 IsSuccessful = true,
                 Message = "Delivery canceled successfully"
             };
+        }
+        [HttpGet("get-cancellation-reason")]
+        public async Task<ActionResult> GetcanellationReason()
+        {
+            var res = await _repo.GetCancelationReasonsAsync();
+            return Ok(res);
         }
     }
 }

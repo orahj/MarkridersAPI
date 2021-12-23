@@ -29,6 +29,7 @@ namespace MarkriderAPI.Extensions
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMailClient, MailClient>();
              services.AddScoped<ITokenService,TokenService>();
+            services.AddScoped<IDeliveryDetailsRepository, DeliveryDetailsRepository>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
             services.Configure<ApiBehaviorOptions>(option =>{
                 option.InvalidModelStateResponseFactory = actionContext =>{

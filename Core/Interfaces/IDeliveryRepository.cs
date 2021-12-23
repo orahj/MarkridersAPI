@@ -26,6 +26,7 @@ namespace Core.Interfaces
         Task<int> GetCountAsync(string sort, string email,SpecParams specParams);
         Task<IReadOnlyList<Delivery>> GetDeliveryForUserAsync(string sort, string email, SpecParams specParams);
         Task<Delivery> GetDeliveryByDeliveryNoAsync(string email,string shipmentNo);
+        Task<IReadOnlyList<DeliveryCancelationReasons>> GetCancelationReasonsAsync();
 
     }
 }
