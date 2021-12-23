@@ -8,6 +8,7 @@ using AutoMapper;
 using Core.DTOs;
 using Core.DTOs.Delivery;
 using Core.Entities;
+using Core.Entities.Identity;
 using Core.Interfaces;
 using Core.Specifications;
 using MarkriderAPI.Controllers.DTOS;
@@ -16,6 +17,7 @@ using MarkriderAPI.Extensions;
 using MarkriderAPI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -27,11 +29,13 @@ namespace MarkriderAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IDeliveryRepository _repo;
         private readonly IDeliveryDetailsRepository _deliveryDetailsRepository;
-        public DeliveryController(IMapper mapper, IDeliveryRepository repo, IDeliveryDetailsRepository deliveryDetailsRepository)
+        private readonly UserManager<AppUser> _userManager;
+        public DeliveryController(IMapper mapper, IDeliveryRepository repo, IDeliveryDetailsRepository deliveryDetailsRepository, UserManager<AppUser> userManager)
         {
             _mapper = mapper;
             _repo = repo;
             _deliveryDetailsRepository = deliveryDetailsRepository;
+            _userManager = userManager;
         }
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveries(string sort, string email,[FromQuery] SpecParams specParams)
@@ -52,20 +56,30 @@ namespace MarkriderAPI.Controllers
            if(res == null) return NotFound(new ApiResponse(404));
            return _mapper.Map<Delivery,DeliveryReturnDTO>(res);
         }
-         [HttpGet("get-delivery-by-email")]
-        public async Task<ActionResult<IReadOnlyList<DeliveryReturnDTO>>> GetDeliveriesByEmail()
+         [HttpGet("get-delivery-by-email/{email}")]
+        public async Task<ActionResult<IReadOnlyList<DeliveryReturnDTO>>> GetDeliveriesByEmail(string email)
         {
-          var email = HttpContext.User.RetrieveEmailFromPrincipal();
-           var res = await _repo.GetDeliveryByEmailAsync(email);
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(email);
+            if (userEmail == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            var res = await _repo.GetDeliveryByEmailAsync(userEmail.Email);
          //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
            return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
-         [HttpGet("get-delivery-by-shipment/{shipmentNo}")]
-        public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveriesNoEmail(string num)
+         [HttpGet("get-delivery-by-shipment/{shipmentNo}/{email}")]
+        public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveriesNoEmail(string num, string email)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
-           var res = await _repo.GetDeliveryByDeliveryNoAsync(email,num);
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(email);
+            if (userEmail == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            var res = await _repo.GetDeliveryByDeliveryNoAsync(userEmail.Email,num);
          //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
            return Ok(_mapper.Map<Delivery,DeliveryReturnDTO>(res));
@@ -119,7 +133,12 @@ namespace MarkriderAPI.Controllers
         [HttpPost("create-delivery")]
         public async Task<ActionResult<Result>> CreateDelivery(DeliveryDTO deliveryDto)
         {
-           var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(deliveryDto.Email);
+            if (userEmail == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
             var delivery = await _repo.CreateDeliveryAsync(deliveryDto);
             if(delivery == null) return BadRequest(new ApiResponse(400,"Error occured while creating shipment"));
 
@@ -138,7 +157,6 @@ namespace MarkriderAPI.Controllers
         [HttpPost("cancel-delivery")]
         public async Task<ActionResult<Result>> CancelDelivery(DeliveryDetailDTO deliveryDto)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
             var delivery = await _deliveryDetailsRepository.CancelDeliveryAsync(deliveryDto);
             if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
 
@@ -151,7 +169,6 @@ namespace MarkriderAPI.Controllers
         [HttpPost("asign-delivery")]
         public async Task<ActionResult<Result>> AsignDelivery(DeliveryDetailDTO deliveryDto)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
             var delivery = await _deliveryDetailsRepository.AsignDeliveryAsync(deliveryDto);
             if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
 
@@ -159,6 +176,18 @@ namespace MarkriderAPI.Controllers
             {
                 IsSuccessful = true,
                 Message = "Delivery successfully asigned!"
+            };
+        }
+        [HttpPost("cancel-delivery-by-user")]
+        public async Task<ActionResult<Result>> CancelDeliveryByUser(DeliveryDetailDTO deliveryDto)
+        {
+            var delivery = await _deliveryDetailsRepository.CancelDeliveryByUserAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
+
+            return new Result
+            {
+                IsSuccessful = true,
+                Message = "Delivery canceled successfully"
             };
         }
     }

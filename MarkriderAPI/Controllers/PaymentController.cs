@@ -32,13 +32,13 @@ namespace MarkriderAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> verifyTransactionAsync(VerifyTransaction paystackSubscriptionRequest)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
-            if(email != paystackSubscriptionRequest.Email)
+            var userEmail = await _userManager.FindByEmailAsync(paystackSubscriptionRequest.Email);
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            if(userEmail == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(paystackSubscriptionRequest.Email);
-            paystackSubscriptionRequest.UserId = appUser.Id.ToString();
+            paystackSubscriptionRequest.UserId = userEmail.Id.ToString();
             var payment = await _payment.VerifyPaystackTransFirstTime(paystackSubscriptionRequest);
             return Ok(payment);
         }
@@ -56,13 +56,13 @@ namespace MarkriderAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> PaymentWithTransfer(FundPaymentTransferDto data)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
-            if(email != data.Email)
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(data.Email);
+            if (userEmail == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(data.Email);
-            data.UserId = appUser.Id.ToString();
+            data.UserId = userEmail.Id.ToString();
             var transfer = _payment.TransferPayment(data);
             return Ok(transfer);
         }

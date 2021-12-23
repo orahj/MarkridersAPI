@@ -56,5 +56,6 @@ namespace Infrastructure.Data
         public DbSet<AdditionalCharges> AdditionalCharges { get; set;}
         public DbSet<DeliveryDetails> DeliveryDetails { get; set; }
         public DbSet<Ratings> Ratings { get; set; }
+        public DbSet<DeliveryCancelationReasons> DeliveryCancelationReasons { get; set; }
     }
 }

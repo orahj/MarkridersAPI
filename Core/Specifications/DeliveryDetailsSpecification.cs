@@ -12,5 +12,9 @@ namespace Core.Specifications
         public DeliveryDetailsSpecification(string userId) : base(x => x.AppUserId == userId)
         {
         }
+
+        public DeliveryDetailsSpecification(int deliveryId) : base(x => x.DeliveriesId == deliveryId)
+        {
+        }
     }
 }

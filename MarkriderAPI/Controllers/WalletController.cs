@@ -29,26 +29,26 @@ namespace MarkriderAPI.Controllers
         [HttpPost("FundWallet")]
         public async Task<ActionResult> FundWallet(FundWalletDto data)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
-            if(email != data.Email)
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(data.Email);
+            if (userEmail == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(data.Email);
-            data.UserId = appUser.Id.ToString();
+            data.UserId = userEmail.Id.ToString();
             var fundWallet = _walletRepository.FundWallet(data);
            return Ok(fundWallet);
         }
         [HttpPost("make-payment-with-wallet")]
         public async Task<IActionResult> FundPaymentWallet(FundPaymentWalletDto data)
         {
-            var email = HttpContext.User.RetrieveEmailFromPrincipal();
-            if(email != data.Email)
+            //var email = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(data.Email);
+            if (userEmail == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(data.Email);
-            data.UserId = appUser.Id.ToString();
+            data.UserId = userEmail.Id.ToString();
             var payment = _walletRepository.FundPaymentWallet(data);
            return Ok(payment);
         }
@@ -57,12 +57,13 @@ namespace MarkriderAPI.Controllers
         //[ProducesResponseType(typeof(WalletTransactionResponseDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUserWalletTransactions([FromQuery] string email)
         {
-            var userEmail = HttpContext.User.RetrieveEmailFromPrincipal();
-            if(userEmail != email)
+            //var userEmail = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(email);
+            if (userEmail == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(userEmail);
+            var appUser = await _userManager.FindByEmailAsync(userEmail.Email);
             if(appUser == null) return NotFound(new ApiResponse(404));
             var walletTransaction = await _walletRepository.GetUserWalletTransactions(appUser.Id.ToString());
             return Ok(walletTransaction);
@@ -71,12 +72,13 @@ namespace MarkriderAPI.Controllers
         [HttpGet("GetWalletBalance")]
         public async Task<IActionResult> GetWalletBalance([FromQuery] string email)
         {
-            var userEmail = HttpContext.User.RetrieveEmailFromPrincipal();
-            if(userEmail != email)
+            //var userEmail = HttpContext.User.RetrieveEmailFromPrincipal();
+            var userEmail = await _userManager.FindByEmailAsync(email);
+            if (userEmail == null)
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(userEmail);
+            var appUser = await _userManager.FindByEmailAsync(userEmail.Email);
             if(appUser == null) return NotFound(new ApiResponse(404));
             var walletBalance = await _walletRepository.GetWalletBalance(appUser.Id.ToString());
             return Ok(walletBalance);

@@ -15,5 +15,9 @@ namespace Core.Specifications
             )
         {
         }
+        public DeliveryWithFilterCountSpec(string email) : base(x => x.Email == email)
+        {
+            AddInclude(x => x.DeliveryItems);
+        }
     }
 }

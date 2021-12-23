@@ -14,5 +14,6 @@ namespace Core.Interfaces
         Task<Result> AsignDeliveryAsync(DeliveryDetailDTO model);
         Task<Result> GetDeliveryDetailsByEmailAsync(string email);
         Task<Result> CancelDeliveryAsync(DeliveryDetailDTO model);
+        Task<Result> CancelDeliveryByUserAsync(DeliveryDetailDTO model);
     }
 }

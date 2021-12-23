@@ -139,7 +139,8 @@ namespace MarkriderAPI.Controllers
                     LastName=user.LastName,
                     Avatar=user.Avatar,
                     State = state.Name,
-                    Country = country.Name
+                    Country = country.Name,
+                    PhoneNumber = user.PhoneNumber
                 };
                 return new Result
                 {

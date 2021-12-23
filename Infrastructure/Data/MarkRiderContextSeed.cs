@@ -34,6 +34,8 @@ namespace Infrastructure.Data
                    await SeedDeliveryDistance(context);
                 if(!context.AdditionalCharges.Any())
                     await SeedAdditionalCharges(context);
+                if (!context.DeliveryCancelationReasons.Any())
+                    await SeedDeliverycancelation(context);
             }
             catch(Exception ex)
             {
@@ -94,8 +96,17 @@ namespace Infrastructure.Data
             context.Countries.AddRange(country);
             await context.SaveChangesAsync();
         }
+        public static async Task SeedDeliverycancelation(MarkRiderContext context)
+        {
+            var reasons = new[] { 
+                new DeliveryCancelationReasons { DeliveryReason = "Parcel not as same as shown on the shipment" },
+                new DeliveryCancelationReasons { DeliveryReason = "Oversized shipment " },
+                new DeliveryCancelationReasons { DeliveryReason = "Overweight shipment" }
+            };
+            context.DeliveryCancelationReasons.AddRange(reasons);
+            await context.SaveChangesAsync();
+        }
 
-       
         public static async Task SeedDelivery(MarkRiderContext context)
         {
             var delivery = new []

@@ -18,6 +18,7 @@ namespace MarkriderAPI.Controllers.DTOS
         public string LastName{get;set;}
         public UserTypes UserTypes{get;set;}
         public string Avatar {get;set;}
+        public string PhoneNumber { get; set; }
 
     }
 
