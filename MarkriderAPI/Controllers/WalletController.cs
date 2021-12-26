@@ -78,9 +78,7 @@ namespace MarkriderAPI.Controllers
             {
                 return NotFound(new ApiResponse(404));
             }
-            var appUser = await _userManager.FindByEmailAsync(userEmail.Email);
-            if(appUser == null) return NotFound(new ApiResponse(404));
-            var walletBalance = await _walletRepository.GetWalletBalance(appUser.Id.ToString());
+            var walletBalance = await _walletRepository.GetWalletBalance(userEmail.Id.ToString());
             return Ok(walletBalance);
         }
 
