@@ -164,7 +164,7 @@ namespace MarkriderAPI.Controllers
             {
                 "Email address already exist!"
             }});
-            var url = _config["ApiUrl"] +"images/temp/avatar.jpg";
+            var url = _config["ApiUrl"] +"images/temp/avatar.jpeg";
             var user = new AppUser
             {
                 UserName = model.UserName,
@@ -319,8 +319,8 @@ namespace MarkriderAPI.Controllers
             };
         }
         //[Authorize]
-        [HttpPost("update-user-info")]
-        public async Task<ActionResult<Result>> UpdateUserInfo([FromBody]RegisterDto data)
+        [HttpPut("update-user-info")]
+        public async Task<ActionResult<Result>> UpdateUserInfo([FromBody] UpdateUserdto data)
         {
              var user = await _userManager.FindByEmailAsync(data.Email);
             if (user == null) return NotFound(new ApiResponse(404));
@@ -374,7 +374,7 @@ namespace MarkriderAPI.Controllers
             };
            
         }
-        private async Task ProcessUpdateUserInfo(RegisterDto model, AppUser user)
+        private async Task ProcessUpdateUserInfo(UpdateUserdto model, AppUser user)
         {
             if (user.PhoneNumber != model.Phone && model.Phone != null)
             {
@@ -384,7 +384,11 @@ namespace MarkriderAPI.Controllers
 
             user.FirstName = model.FirstName ?? user.FirstName;
             user.LastName = model.LastName ?? user.LastName;
-            user.Avatar = model.Avatar;
+            user.Avatar = model.Avatar ?? user.Avatar;
+            user.RCNumber = model.RCNumber ?? user.RCNumber;
+            user.CompanyName = model.CompanyName ?? user.CompanyName;
+            user.BusinessName = model.BusinessName ?? user.BusinessName;
+            user.BusinessNumber = model.BusinessNumber ?? user.BusinessNumber;
 
             var result = await _userManager.UpdateAsync(user);
         }

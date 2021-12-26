@@ -39,4 +39,20 @@ namespace MarkriderAPI.Controllers.DTOS
         public string BusinessName{get;set;}
         public string BusinessNumber{get;set;}
     }
+    public class UpdateUserdto
+    {
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Address { get; set; }
+        public string Avatar { get; set; }
+        public int State { get; set; }
+        public int Country { get; set; }
+        public string Phone { get; set; }
+        public string RiderCardNo { get; set; }
+        public string CompanyName { get; set; }
+        public string RCNumber { get; set; }
+        public string BusinessName { get; set; }
+        public string BusinessNumber { get; set; }
+    }
 }
