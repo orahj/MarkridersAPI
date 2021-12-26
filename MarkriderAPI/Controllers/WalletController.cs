@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.DTOs;
 using Core.DTOs.Wallet;
 using Core.Entities.Identity;
 using Core.Interfaces;
@@ -27,7 +28,7 @@ namespace MarkriderAPI.Controllers
         }
 
         [HttpPost("FundWallet")]
-        public async Task<ActionResult> FundWallet(FundWalletDto data)
+        public async Task<IActionResult> FundWallet(FundWalletDto data)
         {
             //var email = HttpContext.User.RetrieveEmailFromPrincipal();
             var userEmail = await _userManager.FindByEmailAsync(data.Email);
@@ -35,8 +36,12 @@ namespace MarkriderAPI.Controllers
             {
                 return NotFound(new ApiResponse(404));
             }
+            if(userEmail.UserTypes != Core.Enum.UserTypes.Users)
+            {
+                return NotFound(new ApiResponse(404));
+            }
             data.UserId = userEmail.Id.ToString();
-            var fundWallet = _walletRepository.FundWallet(data);
+            var fundWallet = await _walletRepository.FundWallet(data);
            return Ok(fundWallet);
         }
         [HttpPost("make-payment-with-wallet")]
@@ -49,7 +54,7 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             data.UserId = userEmail.Id.ToString();
-            var payment = _walletRepository.FundPaymentWallet(data);
+            var payment = await _walletRepository.FundPaymentWallet(data);
            return Ok(payment);
         }
 

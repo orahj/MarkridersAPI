@@ -52,6 +52,7 @@ namespace Infrastructure.Data
         public DbSet<RidersDelivery> RidersDeliveries {get; set; }
         public DbSet<Transaction> Transactions {get;set;}
         public DbSet<Wallet> Wallets {get; set; }
+        public DbSet<WalletTransaction> WalletTransactions { get; set; }
         public DbSet<DeliveryItem> DeliveryItems { get; set; }
         public DbSet<AdditionalCharges> AdditionalCharges { get; set;}
         public DbSet<DeliveryDetails> DeliveryDetails { get; set; }

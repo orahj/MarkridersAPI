@@ -76,6 +76,7 @@ namespace Infrastructure.Data.Implementations
         public async Task<Result> FundWallet(FundWalletDto data)
         {
             Result res = new Result();
+            //check if not user type
             //get wallet
             var spec = new WalletSpec(data.UserId);
             var wallet = await _unitOfWork.Repository<Wallet>().GetEntityWithSpec(spec);
@@ -100,13 +101,21 @@ namespace Infrastructure.Data.Implementations
                         {
                             paystack.data.amount = paystack.data.amount / 100;
                         }
+                          //update wallet
+                          wallet.Balance = paystack.data.amount;
+                        wallet.DateModified = DateTime.UtcNow;
+                        _unitOfWork.Repository<Wallet>().Update(wallet);
                         //save to wallet transactins
-                        WalletTransaction transaction = new WalletTransaction(wallet.Id,Core.Enum.TransactionType.WalletTopUp,data.Amount,
+                        WalletTransaction transaction = new WalletTransaction(wallet.Id,Core.Enum.TransactionType.WalletTopUp, paystack.data.amount,
                         "Wallet Top UP",data.TransactionRef,Core.Enum.WalletTransactionStatus.Successful);
                         _unitOfWork.Repository<WalletTransaction>().Add(transaction);
                         //save changes to context
                         var result = await _unitOfWork.Complete();
-                      }else
+
+                        res.IsSuccessful = true;
+                        res.Message = "wallet funded successfully!";
+                    }
+                    else
                       {
                            res.IsSuccessful = false;
                             res.Message = "Amount verification mismatch";
