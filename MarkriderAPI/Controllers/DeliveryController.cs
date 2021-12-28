@@ -71,7 +71,7 @@ namespace MarkriderAPI.Controllers
            return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
          [HttpGet("get-delivery-by-shipment/{shipmentNo}/{email}")]
-        public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveriesNoEmail(string num, string email)
+        public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveriesNoEmail(string shipmentNo, string email)
         {
             //var email = HttpContext.User.RetrieveEmailFromPrincipal();
             var userEmail = await _userManager.FindByEmailAsync(email);
@@ -79,7 +79,7 @@ namespace MarkriderAPI.Controllers
             {
                 return NotFound(new ApiResponse(404));
             }
-            var res = await _repo.GetDeliveryByDeliveryNoAsync(userEmail.Email,num);
+            var res = await _repo.GetDeliveryByDeliveryNoAsync(userEmail.Email, shipmentNo);
          //   var totalItem = await _repo.GetCountAsync(sort,email,specParams);
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
            return Ok(_mapper.Map<Delivery,DeliveryReturnDTO>(res));
@@ -89,6 +89,12 @@ namespace MarkriderAPI.Controllers
         {
            var res = await _repo.GetDeliverItemsyAsync();
            return Ok(_mapper.Map<IReadOnlyList<DeliveryItem>,IReadOnlyList<DeliveryItemReturnDTO>>(res));
+        }
+        [HttpGet("delivery-items-by-delivery-id/{id}")]
+        public async Task<ActionResult<IReadOnlyList<DeliveryItemReturnDTO>>> GetDeliveryItemsBydelivery(int id)
+        {
+            var res = await _repo.GetDeliverItemsybyDeliveryAsync(id);
+            return Ok(_mapper.Map<IReadOnlyList<DeliveryItem>, IReadOnlyList<DeliveryItemReturnDTO>>(res));
         }
 
         [HttpGet("delivery-item/{id}")]
@@ -103,6 +109,7 @@ namespace MarkriderAPI.Controllers
            var res = await  _repo.GetDeliveryItemByDeliveryIdAsync(deliveryId,id);
            return _mapper.Map<DeliveryItem,DeliveryItemReturnDTO>(res);
         }
+
         [HttpGet("delivery-locations")]
         public async Task<IActionResult> GetDeliveryLocations()
         {

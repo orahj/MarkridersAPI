@@ -17,6 +17,7 @@ namespace Core.Interfaces
         Task<DeliveryItem> GetDeliveryItemByIdAsync(int Id);
         Task<DeliveryItem> GetDeliveryItemByDeliveryIdAsync(int Id, int deliveryId);
         Task<IReadOnlyList<DeliveryItem>> GetDeliverItemsyAsync();
+        Task<IReadOnlyList<DeliveryItem>> GetDeliverItemsybyDeliveryAsync(int Id);
         Task<DeliveryLocation> GetDeliveryLocationByIdAsync(int Id);
         Task<IReadOnlyList<DeliveryLocation>> GetDeliveryLocationsAsync();
         Task<DeliveryDistance> GetDeliveryDistanceByIdAsync(int Id);

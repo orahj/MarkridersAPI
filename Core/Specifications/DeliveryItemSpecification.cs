@@ -17,9 +17,13 @@ namespace Core.Specifications
         {  
              AddInclude(x=>x.DeliveryLocation);
         }
-         public DeliveryItemSpecification(int  id, int deliveryId) : base( x=>x.Id == id && x.DeliveryId == deliveryId)
+        public DeliveryItemSpecification(int  id, int deliveryId) : base( x=>x.Id == id && x.DeliveryId == deliveryId)
         {   
              AddInclude(x=>x.DeliveryLocation);
+        }
+        public DeliveryItemSpecification(int deliveryId, bool status) : base(x => x.DeliveryId == deliveryId)
+        {
+            AddInclude(x => x.DeliveryLocation);
         }
     }
 }
