@@ -23,6 +23,7 @@ namespace Core.Entities
             DropOffPhone = dropOffPhone;
             ImageUrl = imageUrl;
             DeliveryLocationId = deliveryLocationId;
+            DeliveryId = deliveryId;
         }
 
         public string PickUpItems { get; set; }
