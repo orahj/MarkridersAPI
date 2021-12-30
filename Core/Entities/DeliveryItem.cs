@@ -12,7 +12,7 @@ namespace Core.Entities
         {
         }
 
-        public DeliveryItem(string pickUpItems, decimal deliveryAmount, DeliveryTpe deliveryTpe, DeliveryTime deliveryTime, Carriers carriers, string pickUpPhone, string dropOffPhone, string imageUrl,int deliveryId,int deliveryLocationId)
+        public DeliveryItem(string pickUpItems, decimal deliveryAmount, DeliveryTpe deliveryTpe, DeliveryTime deliveryTime, Carriers carriers, string pickUpPhone, string dropOffPhone, string imageUrl,int deliveryId,int deliveryLocationId,DateTimeOffset scheduledtime)
         {
             PickUpItems = pickUpItems;
             DeliveryAmount = deliveryAmount;
@@ -24,6 +24,7 @@ namespace Core.Entities
             ImageUrl = imageUrl;
             DeliveryLocationId = deliveryLocationId;
             DeliveryId = deliveryId;
+            ScheduledDeliverytime = scheduledtime;
         }
 
         public string PickUpItems { get; set; }
@@ -31,6 +32,7 @@ namespace Core.Entities
         public DateTimeOffset DeliveryDate { get; set; } = DateTimeOffset.Now;
         public DeliveryTpe DeliveryTpe { get; set; }
         public DeliveryTime DeliveryTime { get; set; }
+        public DateTimeOffset ScheduledDeliverytime { get;set; }
         public DeliveryStatus DeliveryStatus{get;set;} = DeliveryStatus.Processing;
         public Carriers Carriers { get; set; }
         public string PickUpPhone { get; set; }

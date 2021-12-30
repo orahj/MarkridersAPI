@@ -79,7 +79,10 @@ namespace Infrastructure.Data.Implementations
                     {
                         amt = amounts.Where(x => x.Distance == 70).FirstOrDefault();
                     }
-                    
+                    if(item.DeliveryTime == Core.Enum.DeliveryTime.RigthAway)
+                    {
+                        item.ScheduledDeliveryDate = DateTimeOffset.Now;
+                    }
                     if(amt.Amount > 0)
                     {
                         var location = new DeliveryLocation(item.BaseLocation.Address,
@@ -90,7 +93,7 @@ namespace Infrastructure.Data.Implementations
 
                         var deliveryItem = new DeliveryItem(item.PickUpItems,amt.Amount,item.DeliveryTpe,
                         item.DeliveryTime,item.Carriers,
-                        item.PickUpPhone,item.DropOffPhone,item.ImageUrl,delivery.Id,location.Id);
+                        item.PickUpPhone,item.DropOffPhone,item.ImageUrl,delivery.Id,location.Id,item.ScheduledDeliveryDate);
                         items.Add(deliveryItem);
                         _unitOfWork.Repository<DeliveryItem>().Add(deliveryItem);
                         await _unitOfWork.Complete();

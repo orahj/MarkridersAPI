@@ -16,6 +16,7 @@ namespace Core.DTOs.Delivery
         public string DropOffPhone { get; set; }
         public int DeliveryId { get; set; }
         public string ImageUrl {get;set;}
+        public DateTimeOffset ScheduledDeliveryDate { get; set; }
         public DeliveryLocationDTO BaseLocation { get; set; }
         public DeliveryLocationDTO TargetLocation { get; set; }
     }
