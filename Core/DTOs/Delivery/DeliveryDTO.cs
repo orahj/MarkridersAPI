@@ -18,6 +18,7 @@ namespace Core.DTOs.Delivery
         public string DeliveryNo { get; set; }
         public string Email { get; set; }
         public decimal TotalAmount { get; set; }
+        public int? transactionId { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public virtual IReadOnlyList<DeliveryItemReturnDTO> DeliveryItems { get; set; }
     }
