@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
-    public partial class Initialcreate : Migration
+    public partial class initialcreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -58,20 +58,18 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Deliveries",
+                name: "DeliveryCancelationReasons",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DeliveryNo = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DeliveryReason = table.Column<string>(type: "text", nullable: true),
                     DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Deliveries", x => x.Id);
+                    table.PrimaryKey("PK_DeliveryCancelationReasons", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,6 +142,22 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    AmountWithCharge = table.Column<decimal>(type: "numeric", nullable: true),
+                    DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -160,67 +174,6 @@ namespace Infrastructure.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Transactions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DateCreated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
-                    AmountWithCharge = table.Column<decimal>(type: "numeric", nullable: true),
-                    DeliveriesId = table.Column<int>(type: "integer", nullable: false),
-                    DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Transactions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Transactions_Deliveries_DeliveriesId",
-                        column: x => x.DeliveriesId,
-                        principalTable: "Deliveries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DeliveryItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PickUpItems = table.Column<string>(type: "text", nullable: true),
-                    DeliveryAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DeliveryDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    DeliveryTpe = table.Column<string>(type: "text", nullable: false),
-                    DeliveryTime = table.Column<string>(type: "text", nullable: false),
-                    DeliveryStatus = table.Column<string>(type: "text", nullable: false),
-                    Carriers = table.Column<string>(type: "text", nullable: false),
-                    PickUpPhone = table.Column<string>(type: "text", nullable: true),
-                    DropOffPhone = table.Column<string>(type: "text", nullable: true),
-                    ImageUrl = table.Column<string>(type: "text", nullable: true),
-                    DeliveryId = table.Column<int>(type: "integer", nullable: false),
-                    DeliveryLocationId = table.Column<int>(type: "integer", nullable: false),
-                    DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeliveryItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DeliveryItems_Deliveries_DeliveryId",
-                        column: x => x.DeliveryId,
-                        principalTable: "Deliveries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DeliveryItems_DeliveryLocations_DeliveryLocationId",
-                        column: x => x.DeliveryLocationId,
-                        principalTable: "DeliveryLocations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -277,6 +230,30 @@ namespace Infrastructure.Migrations
                         principalTable: "States",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Deliveries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DeliveryNo = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    transactionId = table.Column<int>(type: "integer", nullable: true),
+                    DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Deliveries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Deliveries_Transactions_transactionId",
+                        column: x => x.transactionId,
+                        principalTable: "Transactions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -402,6 +379,7 @@ namespace Infrastructure.Migrations
                     InvoiceNumber = table.Column<string>(type: "text", nullable: true),
                     PaymentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Paid = table.Column<bool>(type: "boolean", nullable: false),
+                    TransaferpaymentUpload = table.Column<string>(type: "text", nullable: true),
                     TransactionRef = table.Column<string>(type: "text", nullable: true),
                     TransactionsId = table.Column<int>(type: "integer", nullable: false),
                     TransactionId = table.Column<int>(type: "integer", nullable: true),
@@ -461,6 +439,7 @@ namespace Infrastructure.Migrations
                     BankCode = table.Column<string>(type: "text", nullable: true),
                     BVN = table.Column<string>(type: "text", nullable: true),
                     ValidID = table.Column<string>(type: "text", nullable: true),
+                    RiderStatus = table.Column<bool>(type: "boolean", nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
@@ -498,6 +477,45 @@ namespace Infrastructure.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DeliveryItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    PickUpItems = table.Column<string>(type: "text", nullable: true),
+                    DeliveryAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DeliveryDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DeliveryTpe = table.Column<string>(type: "text", nullable: false),
+                    DeliveryTime = table.Column<string>(type: "text", nullable: false),
+                    ScheduledDeliverytime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DeliveryStatus = table.Column<string>(type: "text", nullable: false),
+                    Carriers = table.Column<string>(type: "text", nullable: false),
+                    PickUpPhone = table.Column<string>(type: "text", nullable: true),
+                    DropOffPhone = table.Column<string>(type: "text", nullable: true),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    DeliveryId = table.Column<int>(type: "integer", nullable: false),
+                    DeliveryLocationId = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DeliveryItems_Deliveries_DeliveryId",
+                        column: x => x.DeliveryId,
+                        principalTable: "Deliveries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DeliveryItems_DeliveryLocations_DeliveryLocationId",
+                        column: x => x.DeliveryLocationId,
+                        principalTable: "DeliveryLocations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -592,6 +610,33 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "WalletTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    WalletId = table.Column<int>(type: "integer", nullable: false),
+                    TransactionType = table.Column<int>(type: "integer", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    TransactionDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    TransactionReference = table.Column<string>(type: "text", nullable: true),
+                    WalletTransactionStatus = table.Column<int>(type: "integer", nullable: false),
+                    DateCreated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    DateModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WalletTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WalletTransactions_Wallets_WalletId",
+                        column: x => x.WalletId,
+                        principalTable: "Wallets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -638,6 +683,11 @@ namespace Infrastructure.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Deliveries_transactionId",
+                table: "Deliveries",
+                column: "transactionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeliveryDetails_AppUserId1",
@@ -705,14 +755,14 @@ namespace Infrastructure.Migrations
                 column: "RiderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transactions_DeliveriesId",
-                table: "Transactions",
-                column: "DeliveriesId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Wallets_AppUserId1",
                 table: "Wallets",
                 column: "AppUserId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WalletTransactions_WalletId",
+                table: "WalletTransactions",
+                column: "WalletId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -734,6 +784,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "DeliveryCancelationReasons");
 
             migrationBuilder.DropTable(
                 name: "DeliveryDetails");
@@ -760,7 +813,7 @@ namespace Infrastructure.Migrations
                 name: "RidersDeliveries");
 
             migrationBuilder.DropTable(
-                name: "Wallets");
+                name: "WalletTransactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -772,13 +825,16 @@ namespace Infrastructure.Migrations
                 name: "DeliveryLocations");
 
             migrationBuilder.DropTable(
-                name: "Transactions");
+                name: "Deliveries");
 
             migrationBuilder.DropTable(
                 name: "Riders");
 
             migrationBuilder.DropTable(
-                name: "Deliveries");
+                name: "Wallets");
+
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -101,9 +101,22 @@ namespace Infrastructure.Data.Implementations
 
                 }
             }
+            //get total amount
+
+            var total = items.Sum(x => x.DeliveryAmount);
+            //save Transaction
+            var amountWithCharge = await _paymentRepository.GetPaymentCharges(total);
+            Transaction tran = new Transaction(total, amountWithCharge.Total);
+            _unitOfWork.Repository<Transaction>().Add(tran);
+
+            //save changes to context
+            var result = await _unitOfWork.Complete();
+
+            if (result <= 0) return null;
+
             //Get total
             var updateDel = await _unitOfWork.Repository<Delivery>().GetByIdAsync(delivery.Id);
-            var total = items.Sum(x =>x.DeliveryAmount);
+            updateDel.transactionId = tran.Id;
             updateDel.TotalAmount = total;
             _unitOfWork.Repository<Delivery>().Update(updateDel);
             //update delivery amount
@@ -114,17 +127,8 @@ namespace Infrastructure.Data.Implementations
                  _unitOfWork.Repository<DeliveryLocation>().Add(item);
             }
 
-            //save Transaction
-            var amountWithCharge = await _paymentRepository.GetPaymentCharges(total);
-            Transaction tran = new Transaction(updateDel.TotalAmount,amountWithCharge.Total,updateDel.Id);
-            _unitOfWork.Repository<Transaction>().Add(tran);
-
-           //save changes to context
-           var result = await _unitOfWork.Complete();
-
-           if(result <= 0) return null;
-           delivery.DeliveryItems = items;
-           return delivery;
+            updateDel.DeliveryItems = items;
+           return updateDel;
 
         }
 

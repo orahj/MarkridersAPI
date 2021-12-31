@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MarkRiderContext))]
-    [Migration("20211226124244_WalletTransactions")]
-    partial class WalletTransactions
+    [Migration("20211231073228_initialcreate")]
+    partial class initialcreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -102,7 +102,12 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int?>("transactionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("transactionId");
 
                     b.ToTable("Deliveries");
                 });
@@ -250,6 +255,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("PickUpPhone")
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("ScheduledDeliverytime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
@@ -651,6 +659,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("TransactionsId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("TransaferpaymentUpload")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId1");
@@ -835,18 +846,13 @@ namespace Infrastructure.Migrations
                     b.Property<decimal?>("AmountWithCharge")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<DateTimeOffset>("DateCreated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("DeliveriesId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("DeliveriesId");
 
                     b.ToTable("Transactions");
                 });
@@ -926,6 +932,15 @@ namespace Infrastructure.Migrations
                     b.HasIndex("WalletId");
 
                     b.ToTable("WalletTransactions");
+                });
+
+            modelBuilder.Entity("Core.Entities.Delivery", b =>
+                {
+                    b.HasOne("Core.Entities.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("transactionId");
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("Core.Entities.DeliveryDetails", b =>
@@ -1110,17 +1125,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Delivery");
 
                     b.Navigation("Rider");
-                });
-
-            modelBuilder.Entity("Core.Entities.Transaction", b =>
-                {
-                    b.HasOne("Core.Entities.Delivery", "Deliveries")
-                        .WithMany()
-                        .HasForeignKey("DeliveriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Deliveries");
                 });
 
             modelBuilder.Entity("Core.Entities.Wallet", b =>

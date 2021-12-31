@@ -16,6 +16,7 @@ namespace Core.Specifications
             )
         {
             AddInclude(x => x.DeliveryItems);
+            AddInclude(x => x.Transaction);
             AddOrderBy(x => x.DateCreated);
             if(!string.IsNullOrEmpty(sort))
             {
@@ -37,15 +38,18 @@ namespace Core.Specifications
 
         public DeliverySpecification(int  id) : base( x=>x.Id == id)
         {
-            AddInclude(x => x.DeliveryItems);     
+            AddInclude(x => x.DeliveryItems);
+            AddInclude(x => x.Transaction);
         }
         public DeliverySpecification(string email) : base(x => x.Email == email)
         {
             AddInclude(x => x.DeliveryItems);
+            AddInclude(x => x.Transaction);
         }
         public DeliverySpecification(string email, string shipmentNo) : base(x =>x.Email == email && x.DeliveryNo == shipmentNo)
         {
              AddInclude(x => x.DeliveryItems);
+            AddInclude(x => x.Transaction);
         }
     }
 }

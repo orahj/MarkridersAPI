@@ -11,18 +11,13 @@ namespace Core.Entities
         {
         }
 
-        public Transaction(decimal amount, decimal? amountWithCharge, int deliveriesId)
+        public Transaction(decimal amount, decimal? amountWithCharge)
         {
             DateCreated = DateTime.UtcNow;
             Amount = amount;
             AmountWithCharge = amountWithCharge;
-            DeliveriesId = deliveriesId;
         }
-
-        public DateTime DateCreated { get; set; }
         public decimal Amount { get; set; }
         public decimal? AmountWithCharge { get; set; }
-        public int DeliveriesId { get; set; }
-        public Delivery Deliveries { get; set; }
     }
 }

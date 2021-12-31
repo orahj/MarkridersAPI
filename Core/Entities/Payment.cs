@@ -34,6 +34,7 @@ namespace Core.Entities
         public string InvoiceNumber { get; set; }
         public DateTime? PaymentDate { get; set; }
         public bool Paid { get; set; }
+        public string TransaferpaymentUpload { get; set; }
         public string TransactionRef { get; set; }
         public int TransactionsId { get; set; }
         public Transaction Transaction { get; set; }

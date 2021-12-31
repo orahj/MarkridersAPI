@@ -12,6 +12,7 @@ namespace Core.DTOs.Payment
         public decimal amount { get; set; }
         public string Email { get; set; }
         public string UserId {get; set;}
+        public int DeliveryId { get; set; }
     }
     public class FundPaymentTransferResponseDto
     {

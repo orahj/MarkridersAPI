@@ -8,9 +8,6 @@ namespace Core.Specifications
 {
     public class TransactionWithSPec : BaseSpecification<Transaction>
     {
-         public TransactionWithSPec(int  id) : base( x=>x.Id == id)
-        {
-            AddInclude(x => x.Deliveries);     
-        }
+         public TransactionWithSPec(int  id) : base( x=>x.Id == id){}
     }
 }

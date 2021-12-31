@@ -112,6 +112,7 @@ namespace Infrastructure.Data.Implementations
         public async Task<Result> TransferPayment(FundPaymentTransferDto request)
         {
             Result res = new Result();
+
             var invoiceNo = _security.GetCode("inv").ToUpper();
             var slnNo = _security.GetCode("sln").ToUpper();
             Payment payment = new Payment(request.UserId,Core.Enum.PaymentMethod.Transfer,slnNo,invoiceNo,false,request.TransactionRef,request.TransactionId);
