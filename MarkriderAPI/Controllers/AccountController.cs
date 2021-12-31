@@ -10,6 +10,7 @@ using Core.DTOs;
 using Core.DTOs.Wallet;
 using Core.Entities.Identity;
 using Core.Interfaces;
+using Core.Specifications;
 using MarkriderAPI.Controllers.DTOS;
 using MarkriderAPI.Controllers.errors;
 using MarkriderAPI.Email.Interfaces;
@@ -126,6 +127,9 @@ namespace MarkriderAPI.Controllers
                 //get states
                 var state = await _generalRepository.GetStateById(user.StateId);
 
+                //get rider if rider
+                var rider = await _riderRepository.GetRiderIs(user.Id.ToString());
+               
                 //get con=untry
                 var country = await _generalRepository.GetCountryById(user.CountryId);
                 var usr = new UserDto
@@ -142,6 +146,11 @@ namespace MarkriderAPI.Controllers
                     Country = country.Name,
                     PhoneNumber = user.PhoneNumber
                 };
+                if (rider.IsSuccessful) 
+                {
+                    usr.RiderId = rider.Message;
+                }
+
                 return new Result
                 {
                     IsSuccessful = true,

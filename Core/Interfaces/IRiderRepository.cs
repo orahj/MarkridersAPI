@@ -12,5 +12,6 @@ namespace Core.Interfaces
          Task<Rider> CreateRiderAsync(RiderDTO model);
           Task<bool> UpdateRiderAsync(RiderDTO model);
         Task<bool> ChangeStatus(RiderStatusDTO riderStatusDTO);
+        Task<Result> GetRiderIs(string Id);
     }
 }

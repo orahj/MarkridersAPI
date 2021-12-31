@@ -39,6 +39,17 @@ namespace Infrastructure.Data.Implementations
             return rider;
         }
 
+        public async Task<Result> GetRiderIs(string Id)
+        {
+            var spec = new RiderSpec(Id);
+            var riderInfo = await _unitOfWork.Repository<Rider>().GetEntityWithSpec(spec);
+            if(riderInfo != null)
+            {
+                return new Result { IsSuccessful = true, Message = riderInfo.Id.ToString() };
+            }
+            return new Result { IsSuccessful = false, Message = "Not a rider" };
+        }
+
         public async Task<bool> UpdateRiderAsync(RiderDTO model)
         {
             var spec = new RiderSpec(model.AppUserId);
