@@ -102,7 +102,7 @@ namespace Infrastructure.Data.Implementations
                             paystack.data.amount = paystack.data.amount / 100;
                         }
                           //update wallet
-                          wallet.Balance = paystack.data.amount;
+                          wallet.Balance = wallet.Balance + paystack.data.amount;
                         wallet.DateModified = DateTime.UtcNow;
                         _unitOfWork.Repository<Wallet>().Update(wallet);
                         //save to wallet transactins
