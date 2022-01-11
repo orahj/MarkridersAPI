@@ -129,8 +129,8 @@ namespace MarkriderAPI.Controllers
 
                 //get rider if rider
                 var rider = await _riderRepository.GetRiderIs(user.Id.ToString());
-               
-                //get con=untry
+                
+                //get conuntry
                 var country = await _generalRepository.GetCountryById(user.CountryId);
                 var usr = new UserDto
                 {

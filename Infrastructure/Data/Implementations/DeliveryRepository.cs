@@ -119,6 +119,7 @@ namespace Infrastructure.Data.Implementations
             updateDel.transactionId = tran.Id;
             updateDel.TotalAmount = total;
             _unitOfWork.Repository<Delivery>().Update(updateDel);
+            await _unitOfWork.Complete();
             //update delivery amount
 
             //Save Delivery locations 
