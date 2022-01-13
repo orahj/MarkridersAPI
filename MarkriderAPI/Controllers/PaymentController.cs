@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.DTOs;
 using Core.DTOs.Payment;
 using Core.Entities.Identity;
+using Core.Interfaces;
 using Infrastructure.Data.Implementations;
 using MarkriderAPI.Controllers.DTOS;
 using MarkriderAPI.Controllers.errors;
@@ -20,9 +21,9 @@ namespace MarkriderAPI.Controllers
     //[Authorize]
     public class PaymentController : BaseAPiController
     {
-        private readonly PaymentRepository _payment;
+        private readonly IPaymentRepository _payment;
         private readonly UserManager<AppUser> _userManager;
-        public PaymentController(PaymentRepository payment,UserManager<AppUser> userManager)
+        public PaymentController(IPaymentRepository payment,UserManager<AppUser> userManager)
         {
             _userManager = userManager;
             _payment = payment;
@@ -54,7 +55,7 @@ namespace MarkriderAPI.Controllers
         [HttpPost("payment-with-transfer")]
         [ProducesResponseType(typeof(FundPaymentTransferDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PaymentWithTransfer(FundPaymentTransferDto data)
+        public async Task<IActionResult> PaymentWithTransfer(FundPaymentTransferDto data)
         {
             //var email = HttpContext.User.RetrieveEmailFromPrincipal();
             var userEmail = await _userManager.FindByEmailAsync(data.Email);
@@ -63,7 +64,7 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             data.UserId = userEmail.Id.ToString();
-            var transfer = _payment.TransferPayment(data);
+            var transfer = await _payment.TransferPayment(data);
             return Ok(transfer);
         }
         [HttpGet("validate-transfer/{Id}")]

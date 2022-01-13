@@ -150,7 +150,7 @@ namespace MarkriderAPI.Controllers
             if(delivery == null) return BadRequest(new ApiResponse(400,"Error occured while creating shipment"));
 
            return new Result{
-              IsSuccessful = true,
+              IsSuccessful = true, 
               Message = "Delivery created successfully",
               ReturnedObject = _mapper.Map<Delivery,DeliveryReturnDTO>(delivery)
            };
