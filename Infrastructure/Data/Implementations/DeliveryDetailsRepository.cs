@@ -66,6 +66,8 @@ namespace Infrastructure.Data.Implementations
         public async Task<Result> AsignDeliveryAsync(DeliveryDetailDTO model)
         {
             if (model == null) return new Result { IsSuccessful = false, Message = "Object can not be null" };
+            //get delivery
+            var deliverydetails = await _unitOfWork.Repository<Delivery>().GetByIdAsync(model.DeliveriesId);
             //create Delivery
             var delivery = new DeliveryDetails(model.AppUserId, model.DeliveriesId);
             _unitOfWork.Repository<DeliveryDetails>().Add(delivery);

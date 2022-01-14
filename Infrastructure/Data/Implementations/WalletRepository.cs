@@ -84,6 +84,10 @@ namespace Infrastructure.Data.Implementations
             {
                 return new Result{IsSuccessful = false, Message = "No Wallet Found!"};
             }
+            if(wallet.Balance < data.Amount)
+            {
+                return new Result { IsSuccessful = false, Message = "No enough funds for transaction! Fund your wallet" };
+            }
             //verifu transaction on paystack
             var paystack = _paymentRepository.VerifyPaystack(data.TransactionRef);
             if (paystack.data == null)
