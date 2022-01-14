@@ -202,7 +202,9 @@ namespace Infrastructure.Data.Implementations
 
                         //save changes to context
                         var result = await _unitOfWork.Complete();
-                      }
+                        res.IsSuccessful = true;
+                        res.Message = "Transaction verified successfuly!";
+                    }
                       else
                       {
                            res.IsSuccessful = false;
@@ -217,7 +219,7 @@ namespace Infrastructure.Data.Implementations
 
                     res.ReturnedObject = pstk.data;
             }
-            return new Result{IsSuccessful = true};
+            return res;
         }
          public PSV VerifyPaystack(string transactionref)
          {
