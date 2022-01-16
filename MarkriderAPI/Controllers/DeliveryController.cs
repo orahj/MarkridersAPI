@@ -167,11 +167,7 @@ namespace MarkriderAPI.Controllers
             var delivery = await _deliveryDetailsRepository.CancelDeliveryAsync(deliveryDto);
             if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
 
-            return new Result
-            {
-                IsSuccessful = true,
-                Message = "Delivery canceled successfully"
-            };
+            return delivery;
         }
         [HttpPost("asign-delivery")]
         public async Task<ActionResult<Result>> AsignDelivery(AsigndeliveryDTO deliveryDto)
@@ -179,11 +175,7 @@ namespace MarkriderAPI.Controllers
             var delivery = await _deliveryDetailsRepository.AsignDeliveryAsync(deliveryDto);
             if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while asigning delivery"));
 
-            return new Result
-            {
-                IsSuccessful = true,
-                Message = "Delivery successfully asigned!"
-            };
+            return delivery;
         }
         [HttpPost("cancel-delivery-by-user")]
         public async Task<ActionResult<Result>> CancelDeliveryByUser(DeliveryDetailDTO deliveryDto)
