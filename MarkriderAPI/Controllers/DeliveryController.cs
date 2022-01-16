@@ -165,7 +165,7 @@ namespace MarkriderAPI.Controllers
         public async Task<ActionResult<Result>> CancelDelivery(DeliveryDetailDTO deliveryDto)
         {
             var delivery = await _deliveryDetailsRepository.CancelDeliveryAsync(deliveryDto);
-            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
 
             return new Result
             {
@@ -174,10 +174,10 @@ namespace MarkriderAPI.Controllers
             };
         }
         [HttpPost("asign-delivery")]
-        public async Task<ActionResult<Result>> AsignDelivery(DeliveryDetailDTO deliveryDto)
+        public async Task<ActionResult<Result>> AsignDelivery(AsigndeliveryDTO deliveryDto)
         {
             var delivery = await _deliveryDetailsRepository.AsignDeliveryAsync(deliveryDto);
-            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while asigning delivery"));
 
             return new Result
             {
@@ -189,13 +189,77 @@ namespace MarkriderAPI.Controllers
         public async Task<ActionResult<Result>> CancelDeliveryByUser(DeliveryDetailDTO deliveryDto)
         {
             var delivery = await _deliveryDetailsRepository.CancelDeliveryByUserAsync(deliveryDto);
-            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while creating shipment"));
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
 
             return new Result
             {
                 IsSuccessful = true,
                 Message = "Delivery canceled successfully"
             };
+        }
+        [HttpGet("get-rider-deliveries")]
+        public async Task<ActionResult<Result>> GetRiderDeliveries([FromQuery]  string email)
+        {
+            var userEmail = await _userManager.FindByEmailAsync(email);
+            if (userEmail == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            var delivery = await _deliveryDetailsRepository.GetDeliveryDetailsByEmailAsync(userEmail.Id.ToString());
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while getting deliveries"));
+
+            return delivery;
+        }
+        [HttpGet("get-rider-sales-record")]
+        public async Task<ActionResult<Result>> GetRiderSalesRecord([FromQuery] string email)
+        {
+            var userEmail = await _userManager.FindByEmailAsync(email);
+            if (userEmail == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            var sales = await _deliveryDetailsRepository.RidersalesAsync(userEmail.Id.ToString());
+            if (sales == null) return BadRequest(new ApiResponse(400, "Error occured while getting deliveries"));
+
+            return sales;
+        }
+        [HttpPost("start-delivery")]
+        public async Task<ActionResult<Result>> StartDelivery(DeliverydeliveredDTO deliveryDto)
+        {
+            var delivery = await _deliveryDetailsRepository.StartDeliveryAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
+
+            return delivery;
+        }
+        [HttpPost("end-delivery")]
+        public async Task<ActionResult<Result>> Delivereddelivery(DeliverydeliveredDTO deliveryDto)
+        {
+            var delivery = await _deliveryDetailsRepository.FulfilledDeliveryAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
+
+            return delivery;
+        }
+        [HttpPost("completed-delivery")]
+        public async Task<ActionResult<Result>> Completeddelvery(DeliveryCompletionDTO deliveryDto)
+        {
+            var userEmail = await _userManager.FindByIdAsync(deliveryDto.AppUserId);
+            if (userEmail == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+            deliveryDto.Email = userEmail.Email;
+            var delivery = await _deliveryDetailsRepository.CompletDeliveryAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
+
+            return delivery;
+        }
+        [HttpPost("disputed-delivery")]
+        public async Task<ActionResult<Result>> DisputedDelivery(DeliveryDisputedDTO deliveryDto)
+        {
+            var delivery = await _deliveryDetailsRepository.DisputedDeliveryAsync(deliveryDto);
+            if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
+
+            return delivery;
         }
         [HttpGet("get-cancellation-reason")]
         public async Task<ActionResult> GetcanellationReason()

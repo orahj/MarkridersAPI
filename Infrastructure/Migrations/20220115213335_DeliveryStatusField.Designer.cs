@@ -3,15 +3,17 @@ using System;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(MarkRiderContext))]
-    partial class MarkRiderContextModelSnapshot : ModelSnapshot
+    [Migration("20220115213335_DeliveryStatusField")]
+    partial class DeliveryStatusField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,9 +161,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("DeliveriesId")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("DeliveryAmount")
-                        .HasColumnType("numeric");
 
                     b.Property<string>("Deliverystatus")
                         .HasColumnType("text");

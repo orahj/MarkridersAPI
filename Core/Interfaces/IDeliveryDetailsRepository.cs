@@ -11,9 +11,14 @@ namespace Core.Interfaces
 {
     public interface IDeliveryDetailsRepository
     {
-        Task<Result> AsignDeliveryAsync(DeliveryDetailDTO model);
-        Task<Result> GetDeliveryDetailsByEmailAsync(string email);
+        Task<Result> AsignDeliveryAsync(AsigndeliveryDTO model);
+        Task<Result> GetDeliveryDetailsByEmailAsync(string userId);
         Task<Result> CancelDeliveryAsync(DeliveryDetailDTO model);
         Task<Result> CancelDeliveryByUserAsync(DeliveryDetailDTO model);
+        Task<Result> CompletDeliveryAsync(DeliveryCompletionDTO model);
+        Task<Result> DisputedDeliveryAsync(DeliveryDisputedDTO model);
+        Task<Result> FulfilledDeliveryAsync(DeliverydeliveredDTO model);
+        Task<Result> RidersalesAsync(string userId);
+        Task<Result> StartDeliveryAsync(DeliverydeliveredDTO model);
     }
 }

@@ -27,6 +27,8 @@ namespace Infrastructure.Data.Implementations
 
         public async Task<Delivery> CreateDeliveryAsync(DeliveryDTO model)
         {
+            //check its not a rider
+            //var rider = await _unitOfWork.Repository<Rider>().GetByIdAsync()
              //generate transaction ref
            var transactinref = _security.GetCode("DL").ToUpper();
            //create Delivery

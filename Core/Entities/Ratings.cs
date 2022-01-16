@@ -10,6 +10,17 @@ namespace Core.Entities
 {
     public class Ratings :BaseEntity
     {
+        public Ratings()
+        {
+        }
+
+        public Ratings(int ratingNumber, string comment, string appUserId)
+        {
+            RatingNumber = ratingNumber;
+            Comment = comment;
+            AppUserId = appUserId;
+        }
+
         public int RatingNumber { get; set; }
         public string Comment { get; set; }
         [Required]

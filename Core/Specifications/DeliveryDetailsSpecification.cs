@@ -11,6 +11,9 @@ namespace Core.Specifications
     {
         public DeliveryDetailsSpecification(string userId) : base(x => x.AppUserId == userId)
         {
+            AddInclude(x => x.AppUser);
+            AddInclude(x => x.Ratings);
+            AddInclude(x => x.Deliveries);
         }
 
         public DeliveryDetailsSpecification(int deliveryId) : base(x => x.DeliveriesId == deliveryId)
