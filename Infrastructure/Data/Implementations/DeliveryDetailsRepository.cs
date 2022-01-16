@@ -99,11 +99,20 @@ namespace Infrastructure.Data.Implementations
             {
                 return new Result { IsSuccessful = false, Message = "Rider not found" };
             }
+
             //get deliveryitem
             var spec = new DeliverySpecification(model.DeliveriesId);
             var deliverydetails = await _unitOfWork.Repository<Delivery>().GetEntityWithSpec(spec);
+
+            //check if delivery has be assigned
+            var deldetailsSpec = new DeliveryDetailsSpecification(deliverydetails.Id);
+            var asingeddelivery = await _unitOfWork.Repository<DeliveryDetails>().GetEntityWithSpec(deldetailsSpec);
+            if(asingeddelivery != null)
+            {
+                return new Result { IsSuccessful = false, Message = "Delivery has ben asigned already!" };
+            }
             //update delivery status to asigned
-            foreach(var item in deliverydetails.DeliveryItems)
+            foreach (var item in deliverydetails.DeliveryItems)
             {
                 var deliveryitem = await _unitOfWork.Repository<DeliveryItem>().GetByIdAsync(item.Id);
                 deliveryitem.DeliveryStatus = Core.Enum.DeliveryStatus.Assigned;
