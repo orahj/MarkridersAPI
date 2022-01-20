@@ -171,7 +171,7 @@ namespace MarkriderAPI.Controllers
         }
         [HttpPost("asign-delivery")]
         public async Task<ActionResult<Result>> AsignDelivery(AsigndeliveryDTO deliveryDto)
-        {
+         {
             var delivery = await _deliveryDetailsRepository.AsignDeliveryAsync(deliveryDto);
             if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while asigning delivery"));
 

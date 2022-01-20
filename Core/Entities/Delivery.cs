@@ -28,6 +28,8 @@ namespace Core.Entities
         [Required]
         public string Email { get; set; }
         public decimal TotalAmount { get; set; }
+        public bool IscancledByUser { get; set; }
+        public string ReasonForCanling { get; set; }
         public int? transactionId { get; set; }
         public Transaction Transaction { get; set; }
         public virtual IReadOnlyList<DeliveryItem> DeliveryItems { get; set; }

@@ -42,6 +42,7 @@ namespace Infrastructure.Data.Implementations
             }
             var spec = new DeliveryDetailsSpecification(model.DeliveriesId);
             var del = await _unitOfWork.Repository<DeliveryDetails>().GetEntityWithSpec(spec);
+            if (del == null) return new Result { IsSuccessful = false, Message = "Delivery not asigned to this rider" };
             
             //get delivery
             var deliverySpec = new DeliverySpecification(del.DeliveriesId);
@@ -67,7 +68,7 @@ namespace Infrastructure.Data.Implementations
                     //update wallet amount
                     var walletBalance = wallet.Balance + delivery.TotalAmount;
                     wallet.Balance = walletBalance;
-
+                    _unitOfWork.Repository<Wallet>().Update(wallet);
                     //Create wallet tranaction
                     //generate transaction ref
                     var transactinref = _security.GetCode("WAL").ToUpper();
@@ -103,7 +104,10 @@ namespace Infrastructure.Data.Implementations
             //get deliveryitem
             var spec = new DeliverySpecification(model.DeliveriesId);
             var deliverydetails = await _unitOfWork.Repository<Delivery>().GetEntityWithSpec(spec);
-
+            if (deliverydetails.IscancledByUser)
+            {
+                return new Result { IsSuccessful = false, Message = "Delivery has been canceled by user" };
+            }
             //check if delivery has be assigned
             var deldetailsSpec = new DeliveryDetailsSpecification(deliverydetails.Id);
             var asingeddelivery = await _unitOfWork.Repository<DeliveryDetails>().GetEntityWithSpec(deldetailsSpec);
@@ -185,7 +189,7 @@ namespace Infrastructure.Data.Implementations
                     //update wallet amount
                     var walletBalance = wallet.Balance + delivery.TotalAmount;
                     wallet.Balance = walletBalance;
-
+                    _unitOfWork.Repository<Wallet>().Update(wallet);
                     //Create wallet tranaction
                     //generate transaction ref
                     var transactinref = _security.GetCode("WAL").ToUpper();
@@ -193,13 +197,11 @@ namespace Infrastructure.Data.Implementations
                     "Deposit", transactinref, Core.Enum.WalletTransactionStatus.Successful);
                     _unitOfWork.Repository<WalletTransaction>().Add(transaction);
 
-                    //cancel delivery
-                    deliverydetails.IsCanceled = true;
-                    deliverydetails.CancelReason = model.Reason;
-                    deliverydetails.Canceleduser = user.Id.ToString();
-                    deliverydetails.Deliverystatus = "Canceled";
-                    _unitOfWork.Repository<DeliveryDetails>().Update(deliverydetails);
-                    //save changes to context
+                    ////cancel delivery
+                    delivery.IscancledByUser = true;
+                    delivery.ReasonForCanling = model.Reason;
+                    _unitOfWork.Repository<Delivery>().Update(delivery);
+                    ////save changes to context
                     await _unitOfWork.Complete();
                 }
             }
