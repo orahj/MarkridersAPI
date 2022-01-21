@@ -12,7 +12,17 @@ namespace Core.Entities
 {
     public class Notification :BaseEntity
     {
-       [Required]
+        public Notification() { }
+        public Notification(string appUserId, AppUser appUser, NotificationType type, bool read, string dataJson)
+        {
+            AppUserId = appUserId;
+            AppUser = appUser;
+            Type = type;
+            Read = read;
+            DataJson = dataJson;
+        }
+
+        [Required]
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public NotificationType Type { get; set; }

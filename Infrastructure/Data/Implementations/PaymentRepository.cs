@@ -7,8 +7,10 @@ using Core.DTOs;
 using Core.DTOs.Payment;
 using Core.Entities;
 using Core.Entities.Identity;
+using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
@@ -21,11 +23,13 @@ namespace Infrastructure.Data.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _config;
         private readonly ISecurityService _security;
-        public PaymentRepository(IUnitOfWork unitOfWork,IConfiguration config,ISecurityService security)
+        private readonly UserManager<AppUser> _userManager;
+        public PaymentRepository(IUnitOfWork unitOfWork,IConfiguration config,ISecurityService security, UserManager<AppUser> userManager)
         {
             _security = security;
             _config = config;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         public async Task<Result> BankList()
@@ -122,6 +126,22 @@ namespace Infrastructure.Data.Implementations
             var result = await _unitOfWork.Complete();
             res.Message = "Transfer initiated successfully, complete the transfer by entering the transaction reference number "+ request.TransactionRef + " in your payment description.";
             res.IsSuccessful = true;
+            //notification
+            var notification = new Notification
+            {
+                AppUserId = request.UserId,
+                DateCreated = DateTime.Now,
+                Read = false,
+                Type = NotificationType.WalletUpdate,
+                Data = new Dictionary<string, string>
+                {
+                    { "Title", $"Delvery Payment:Transfer. Amount: {request.amount}" },
+                    { "Body", $"You just made payment with transfer; {request.amount}, on {DateTime.Now}." },
+                    { "WalletId", $"{payment.Id}"}
+                }
+            };
+            _unitOfWork.Repository<Notification>().Add(notification);
+            await _unitOfWork.Complete();
             return res;
         }
 
@@ -204,6 +224,22 @@ namespace Infrastructure.Data.Implementations
                         var result = await _unitOfWork.Complete();
                         res.IsSuccessful = true;
                         res.Message = "Transaction verified successfuly!";
+                        //notification
+                        var notification = new Notification
+                        {
+                            AppUserId = verifyTransaction.UserId,
+                            DateCreated = DateTime.Now,
+                            Read = false,
+                            Type = NotificationType.WalletUpdate,
+                            Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Delvery Payment:Paystack. Amount: {verifyTransaction.amount}" },
+                                { "Body", $"You just made payment with paystack; {verifyTransaction.amount}, on {DateTime.Now}." },
+                                { "WalletId", $"{payment.Id}"}
+                            }
+                        };
+                        _unitOfWork.Repository<Notification>().Add(notification);
+                        await _unitOfWork.Complete();
                     }
                       else
                       {

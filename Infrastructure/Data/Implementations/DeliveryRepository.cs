@@ -6,8 +6,11 @@ using Core.DTOs;
 using Core.DTOs.Delivery;
 using Core.DTOs.Payment;
 using Core.Entities;
+using Core.Entities.Identity;
+using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Implementations
@@ -17,12 +20,14 @@ namespace Infrastructure.Data.Implementations
         private readonly ISecurityService _security;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly UserManager<AppUser> _userManager;
 
-        public DeliveryRepository(ISecurityService security, IUnitOfWork unitOfWork, IPaymentRepository paymentRepository)
+        public DeliveryRepository(ISecurityService security, IUnitOfWork unitOfWork, IPaymentRepository paymentRepository, UserManager<AppUser> userManager)
         {
             _paymentRepository = paymentRepository;
             _unitOfWork = unitOfWork;
             _security = security;
+            _userManager = userManager;
         }
 
         public async Task<Delivery> CreateDeliveryAsync(DeliveryDTO model)
@@ -129,9 +134,30 @@ namespace Infrastructure.Data.Implementations
             {
                  _unitOfWork.Repository<DeliveryLocation>().Add(item);
             }
-
+           
             updateDel.DeliveryItems = items;
-           return updateDel;
+            //add notification record
+            var userEmail = await _userManager.FindByEmailAsync(model.Email);
+            if (userEmail != null)
+            {
+                var notification = new Notification
+                {
+                    AppUserId = userEmail.Id.ToString(),
+                    DateCreated = DateTime.Now,
+                    Read = false,
+                    Type = NotificationType.DeliveryUpdate,
+                    Data = new Dictionary<string, string>
+                    {
+                        { "Title", $"New Delivery: {updateDel.DeliveryNo}" },
+                        { "Body", $"You just created a new delivery, on {DateTime.Now}. Delivery amount is {updateDel.TotalAmount}." },
+                        { "DeliveryId", $"{updateDel.Id}"}
+                    }
+                };
+                _unitOfWork.Repository<Notification>().Add(notification);
+                await _unitOfWork.Complete();
+            }
+
+            return updateDel;
 
         }
 

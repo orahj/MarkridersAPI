@@ -2,6 +2,7 @@
 using Core.DTOs.Delivery;
 using Core.Entities;
 using Core.Entities.Identity;
+using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
 using Microsoft.AspNetCore.Identity;
@@ -47,7 +48,7 @@ namespace Infrastructure.Data.Implementations
             //get delivery
             var deliverySpec = new DeliverySpecification(del.DeliveriesId);
             var delivery = await _unitOfWork.Repository<Delivery>().GetEntityWithSpec(deliverySpec);
-            if(delivery != null)
+            if (delivery != null)
             {
                 //update delivery status to asigned
                 foreach (var item in delivery.DeliveryItems)
@@ -63,7 +64,7 @@ namespace Infrastructure.Data.Implementations
                 //refun wallet 
                 var specWallet = new WalletSpec(user.Id.ToString());
                 var wallet = await _unitOfWork.Repository<Wallet>().GetEntityWithSpec(specWallet);
-                if(wallet != null)
+                if (wallet != null)
                 {
                     //update wallet amount
                     var walletBalance = wallet.Balance + delivery.TotalAmount;
@@ -86,8 +87,26 @@ namespace Infrastructure.Data.Implementations
                     //save changes to context
                     await _unitOfWork.Complete();
                 }
+                var userEmail = await _userManager.FindByEmailAsync(delivery.Email);
+                if (userEmail != null)
+                {
+                    var notification = new Notification
+                    {
+                        AppUserId = userEmail.Id.ToString(),
+                        DateCreated = DateTime.Now,
+                        Read = false,
+                        Type = NotificationType.DeliveryUpdate,
+                        Data = new Dictionary<string, string>
+                    {
+                        { "Title", $"Canceled Delivery By: {userEmail.Email}" },
+                        { "Body", $"You just cancled this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                        { "DeliveryId", $"{delivery.Id}"}
+                    }
+                    };
+                    _unitOfWork.Repository<Notification>().Add(notification);
+                    await _unitOfWork.Complete();
+                }
             }
-           
             return new Result { IsSuccessful = true, Message = "Delivery Canceled successfully!" };
         }
 
@@ -128,6 +147,27 @@ namespace Infrastructure.Data.Implementations
             _unitOfWork.Repository<DeliveryDetails>().Add(delivery);
             //save delivery to get Id
             await _unitOfWork.Complete();
+
+            //notification
+            var userEmail = await _userManager.FindByEmailAsync(deliverydetails.Email);
+            if (userEmail != null)
+            {
+                var notification = new Notification
+                {
+                    AppUserId = userEmail.Id.ToString(),
+                    DateCreated = DateTime.Now,
+                    Read = false,
+                    Type = NotificationType.DeliveryUpdate,
+                    Data = new Dictionary<string, string>
+                    {
+                        { "Title", $"New delivery assigned: {deliverydetails.DeliveryNo}" },
+                        { "Body", $"You have been assigned a delivery, on {DateTime.Now}. Delivery Number is {deliverydetails.DeliveryNo}." },
+                        { "DeliveryId", $"{delivery.Id}"}
+                    }
+                };
+                _unitOfWork.Repository<Notification>().Add(notification);
+                await _unitOfWork.Complete();
+            }
             return new Result { IsSuccessful = true, Message = "Delivery Asigned successfully!" };
         }
 
@@ -204,6 +244,26 @@ namespace Infrastructure.Data.Implementations
                     _unitOfWork.Repository<Delivery>().Update(delivery);
                     ////save changes to context
                     await _unitOfWork.Complete();
+                    //notification
+                    var userEmail = await _userManager.FindByEmailAsync(delivery.Email);
+                    if (userEmail != null)
+                    {
+                        var notification = new Notification
+                        {
+                            AppUserId = userEmail.Id.ToString(),
+                            DateCreated = DateTime.Now,
+                            Read = false,
+                            Type = NotificationType.DeliveryUpdate,
+                            Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Delivery Cancellation: {delivery.DeliveryNo}" },
+                                { "Body", $"You just canceled this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                                { "DeliveryId", $"{delivery.Id}"}
+                            }
+                        };
+                        _unitOfWork.Repository<Notification>().Add(notification);
+                        await _unitOfWork.Complete();
+                    }
                 }
             }
 
@@ -270,6 +330,27 @@ namespace Infrastructure.Data.Implementations
                 deliverydetails.RatingId = ratings != null ? ratings.Id : null;
                 _unitOfWork.Repository<DeliveryDetails>().Update(deliverydetails);
                 await _unitOfWork.Complete();
+
+                //notification
+                var userEmail = await _userManager.FindByEmailAsync(delivery.Email);
+                if (userEmail != null)
+                {
+                    var notification = new Notification
+                    {
+                        AppUserId = userEmail.Id.ToString(),
+                        DateCreated = DateTime.Now,
+                        Read = false,
+                        Type = NotificationType.DeliveryUpdate,
+                        Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Delivery Completion: {delivery.DeliveryNo}" },
+                                { "Body", $"You just completed this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                                { "DeliveryId", $"{delivery.Id}"}
+                            }
+                    };
+                    _unitOfWork.Repository<Notification>().Add(notification);
+                    await _unitOfWork.Complete();
+                }
             }
 
             return new Result { IsSuccessful = true, Message = "Delivery Completed successfully!" };
@@ -323,6 +404,27 @@ namespace Infrastructure.Data.Implementations
                 deliverydetails.Deliverystatus = "Disputed";
                 _unitOfWork.Repository<DeliveryDetails>().Update(deliverydetails);
                 await _unitOfWork.Complete();
+
+                //notification
+                var userEmail = await _userManager.FindByEmailAsync(delivery.Email);
+                if (userEmail != null)
+                {
+                    var notification = new Notification
+                    {
+                        AppUserId = userEmail.Id.ToString(),
+                        DateCreated = DateTime.Now,
+                        Read = false,
+                        Type = NotificationType.DeliveryUpdate,
+                        Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Delivery Dispute: {delivery.DeliveryNo}" },
+                                { "Body", $"You just disputed this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                                { "DeliveryId", $"{delivery.Id}"}
+                            }
+                    };
+                    _unitOfWork.Repository<Notification>().Add(notification);
+                    await _unitOfWork.Complete();
+                }
             }
 
             return new Result { IsSuccessful = true, Message = "Delivery Disputed!" };
@@ -365,6 +467,27 @@ namespace Infrastructure.Data.Implementations
                 deliverydetails.Deliverystatus = "Delivered";
                 _unitOfWork.Repository<DeliveryDetails>().Update(deliverydetails);
                 await _unitOfWork.Complete();
+
+                //notification
+                var userEmail = await _userManager.FindByEmailAsync(delivery.Email);
+                if (userEmail != null)
+                {
+                    var notification = new Notification
+                    {
+                        AppUserId = userEmail.Id.ToString(),
+                        DateCreated = DateTime.Now,
+                        Read = false,
+                        Type = NotificationType.DeliveryUpdate,
+                        Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Delivery Delivered: {delivery.DeliveryNo}" },
+                                { "Body", $"You just delivered this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                                { "DeliveryId", $"{delivery.Id}"}
+                            }
+                    };
+                    _unitOfWork.Repository<Notification>().Add(notification);
+                    await _unitOfWork.Complete();
+                }
             }
 
             return new Result { IsSuccessful = true, Message = "Delivery fulfilled!" };
@@ -406,6 +529,27 @@ namespace Infrastructure.Data.Implementations
                 deliverydetails.Deliverystatus = "Started";
                 _unitOfWork.Repository<DeliveryDetails>().Update(deliverydetails);
                 await _unitOfWork.Complete();
+
+                //notification
+                var userEmail = await _userManager.FindByEmailAsync(delivery.Email);
+                if (userEmail != null)
+                {
+                    var notification = new Notification
+                    {
+                        AppUserId = userEmail.Id.ToString(),
+                        DateCreated = DateTime.Now,
+                        Read = false,
+                        Type = NotificationType.DeliveryUpdate,
+                        Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Delivery Started: {delivery.DeliveryNo}" },
+                                { "Body", $"You just started this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                                { "DeliveryId", $"{delivery.Id}"}
+                            }
+                    };
+                    _unitOfWork.Repository<Notification>().Add(notification);
+                    await _unitOfWork.Complete();
+                }
             }
 
             return new Result { IsSuccessful = true, Message = "Delivery started!" };

@@ -40,16 +40,19 @@ namespace Core.Specifications
         {
             AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
+            AddOrderBy(x => x.DateCreated);
         }
         public DeliverySpecification(string email) : base(x => x.Email == email)
         {
             AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
+            AddOrderBy(x => x.DateCreated);
         }
         public DeliverySpecification(string email, string shipmentNo) : base(x =>x.Email == email && x.DeliveryNo == shipmentNo)
         {
              AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
+            AddOrderBy(x => x.DateCreated);
         }
     }
 }

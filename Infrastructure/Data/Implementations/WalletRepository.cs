@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using Core.DTOs;
 using Core.DTOs.Wallet;
 using Core.Entities;
+using Core.Entities.Identity;
+using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Data.Implementations
@@ -17,13 +20,15 @@ namespace Infrastructure.Data.Implementations
         private readonly IConfiguration _config;
         private readonly ISecurityService _security;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly UserManager<AppUser> _userManager;
         public WalletRepository(IUnitOfWork unitOfWork,IConfiguration config,ISecurityService security,
-        IPaymentRepository paymentRepository)
+        IPaymentRepository paymentRepository, UserManager<AppUser> userManager)
         {
             _paymentRepository = paymentRepository;
             _security = security;
             _config = config;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
         public async Task<Result> CreateWallet(CreateWalletDTO data)
@@ -68,6 +73,22 @@ namespace Infrastructure.Data.Implementations
 
             //save changes to context
             var result = await _unitOfWork.Complete();
+            //notification
+            var notification = new Notification
+            {
+                AppUserId = wallet.AppUserId,
+                DateCreated = DateTime.Now,
+                Read = false,
+                Type = NotificationType.WalletUpdate,
+                Data = new Dictionary<string, string>
+                    {
+                        { "Title", $"Delvery Payment:Wallet. Amount: {data.amount}" },
+                        { "Body", $"You just made payment from your wallet; {data.amount}, on {DateTime.Now}. New balance is {wallet.Balance}." },
+                        { "WalletId", $"{wallet.Id}"}
+                    }
+            };
+            _unitOfWork.Repository<Notification>().Add(notification);
+            await _unitOfWork.Complete();
             res.Message = "Payment successful!";
             res.IsSuccessful = true;
             return res;
@@ -115,6 +136,23 @@ namespace Infrastructure.Data.Implementations
 
                         res.IsSuccessful = true;
                         res.Message = "wallet funded successfully!";
+
+                        //notification
+                        var notification = new Notification
+                        {
+                            AppUserId = wallet.AppUserId,
+                            DateCreated = DateTime.Now,
+                            Read = false,
+                            Type = NotificationType.WalletUpdate,
+                            Data = new Dictionary<string, string>
+                            {
+                                { "Title", $"Wallet Funding. Amount: {data.Amount}" },
+                                { "Body", $"You credited your wallet with {data.Amount}, on {DateTime.Now}. New balance is {wallet.Balance}." },
+                                { "WalletId", $"{wallet.Id}"}
+                            }
+                        };
+                        _unitOfWork.Repository<Notification>().Add(notification);
+                        await _unitOfWork.Complete();
                     }
                     else
                       {
