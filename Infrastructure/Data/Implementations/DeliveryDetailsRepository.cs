@@ -80,6 +80,7 @@ namespace Infrastructure.Data.Implementations
                     del.IsCanceled = true;
                     del.CancelReason = model.Reason;
                     del.Canceleduser = rider.AppUserId;
+                    del.Deliverystatus = "Canceled";
                     _unitOfWork.Repository<DeliveryDetails>().Update(del);
 
                     //save changes to context
