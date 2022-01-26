@@ -40,7 +40,8 @@ namespace Infrastructure.Data.Implementations
         {
             var notification = await _unitOfWork.Repository<Notification>().GetByIdAsync(id);
             _unitOfWork.Repository<Notification>().Delete(notification);
-            return new Result { IsSuccessful = true, Message = "Notifications was deleted." };
+            await _unitOfWork.Complete();
+            return new Result { IsSuccessful = true, Message = "Notifications has been deleted." };
         }
 
         public async Task<Result> GetNotificationById(int id)
