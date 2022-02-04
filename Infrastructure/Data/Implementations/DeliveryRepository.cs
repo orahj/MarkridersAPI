@@ -48,6 +48,37 @@ namespace Infrastructure.Data.Implementations
             {
                 foreach (var item in model.DeliveryItems)
                 {
+                    //chec delivery type of single
+                    if(item.DeliveryTpe == DeliveryTpe.Single)
+                    {
+                        if(model.DeliveryItems.Count > 1)
+                        {
+                            int i = 0;
+                            item.BaseLocation = model.DeliveryItems[i].BaseLocation;
+                            item.TargetLocation = model.DeliveryItems[i].TargetLocation;
+                            item.DeliveryTime = model.DeliveryItems[i].DeliveryTime;
+                            item.Carriers = model.DeliveryItems[i].Carriers;
+                            item.PickUpPhone = model.DeliveryItems[i].PickUpPhone;
+                            item.DropOffPhone = model.DeliveryItems[i].DropOffPhone;
+                        }
+                    }
+                    if(item.DeliveryTpe == DeliveryTpe.BulkDelivery)
+                    {
+
+                        int i = 0;
+                        if (model.DeliveryItems.Count > 1)
+                        {
+                            item.BaseLocation = model.DeliveryItems[i].BaseLocation;
+                            item.DeliveryTime = model.DeliveryItems[i].DeliveryTime;
+                            item.Carriers = model.DeliveryItems[i].Carriers;
+                            item.PickUpPhone = model.DeliveryItems[i].PickUpPhone;
+                            item.DropOffPhone = model.DeliveryItems[i].DropOffPhone;
+                        }
+                        if(item.TargetLocation == null)
+                        {
+                            item.TargetLocation = model.DeliveryItems[i].TargetLocation;
+                        }
+                    }
                       //get distance covered
                     double distanceToCover = CalculateDistance(item.BaseLocation,item.TargetLocation);
                     //get distance amount

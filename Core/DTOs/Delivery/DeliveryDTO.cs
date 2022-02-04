@@ -11,7 +11,7 @@ namespace Core.DTOs.Delivery
     {
         [Required]
         public string Email { get; set; }
-        public virtual ICollection<DeliveryItemDTO> DeliveryItems { get; set; }
+        public virtual IList<DeliveryItemDTO> DeliveryItems { get; set; }
     }
     public class DeliveryReturnDTO
     {
