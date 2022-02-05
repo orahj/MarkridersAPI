@@ -36,15 +36,17 @@ namespace Infrastructure.Data.Implementations
             //var rider = await _unitOfWork.Repository<Rider>().GetByIdAsync()
              //generate transaction ref
            var transactinref = _security.GetCode("DL").ToUpper();
-           //create Delivery
-           var delivery = new Delivery(transactinref,model.Email);
+            var amt = new DeliveryDistance();
+            //create Delivery
+            var delivery = new Delivery(transactinref,model.Email);
             _unitOfWork.Repository<Delivery>().Add(delivery);
             //save delivery to get Id
             await _unitOfWork.Complete();
 
             List<DeliveryItem> items = new List<DeliveryItem>();
             List<DeliveryLocation> locations = new List<DeliveryLocation>();
-            if(model.DeliveryItems.Count > 0)
+            decimal total = new decimal();
+            if (model.DeliveryItems.Count > 0)
             {
                 foreach (var item in model.DeliveryItems)
                 {
@@ -88,7 +90,7 @@ namespace Infrastructure.Data.Implementations
                     //base fair 300 naira for bikes
                     //100 naira per kilometer plus base fair
                     //amount = kilometer * 100 + 300
-                     var amt = new DeliveryDistance();
+                     amt = new DeliveryDistance();
                     if(distanceToCover <= 20)
                     {
                         amt = amounts.Where(x => x.Distance == 20).FirstOrDefault();
@@ -121,6 +123,7 @@ namespace Infrastructure.Data.Implementations
                     {
                         item.ScheduledDeliveryDate = DateTimeOffset.Now;
                     }
+                    
                     if(amt.Amount > 0)
                     {
                         var location = new DeliveryLocation(item.BaseLocation.Address,
@@ -140,9 +143,16 @@ namespace Infrastructure.Data.Implementations
                 }
             }
             //get total amount
-
-            var total = items.Sum(x => x.DeliveryAmount);
-            //save Transaction
+          
+            if(model.DeliveryItems[0].DeliveryTpe == DeliveryTpe.Single)
+            {
+                total = amt.Amount;
+            }
+            if(model.DeliveryItems[0].DeliveryTpe == DeliveryTpe.BulkDelivery)
+            {
+                total = items.Sum(x => x.DeliveryAmount);
+            }
+           
             var amountWithCharge = await _paymentRepository.GetPaymentCharges(total);
             Transaction tran = new Transaction(total, amountWithCharge.Total);
             _unitOfWork.Repository<Transaction>().Add(tran);
