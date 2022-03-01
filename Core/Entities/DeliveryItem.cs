@@ -33,7 +33,7 @@ namespace Core.Entities
         public DeliveryTpe DeliveryTpe { get; set; }
         public DeliveryTime DeliveryTime { get; set; }
         public DateTimeOffset ScheduledDeliverytime { get;set; }
-        public DeliveryStatus DeliveryStatus{get;set;} = DeliveryStatus.Processing;
+        public DeliveryStatus DeliveryStatus{get;set;} = DeliveryStatus.Created;
         public Carriers Carriers { get; set; }
         public string PickUpPhone { get; set; }
         public string DropOffPhone { get; set; }

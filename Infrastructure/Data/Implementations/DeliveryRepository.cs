@@ -36,7 +36,7 @@ namespace Infrastructure.Data.Implementations
             //var rider = await _unitOfWork.Repository<Rider>().GetByIdAsync()
              //generate transaction ref
            var transactinref = _security.GetCode("DL").ToUpper();
-            var amt = new DeliveryDistance();
+            decimal amt = 0;
             //create Delivery
             var delivery = new Delivery(transactinref,model.Email);
             _unitOfWork.Repository<Delivery>().Add(delivery);
@@ -90,41 +90,14 @@ namespace Infrastructure.Data.Implementations
                     //base fair 300 naira for bikes
                     //100 naira per kilometer plus base fair
                     //amount = kilometer * 100 + 300
-                     amt = new DeliveryDistance();
-                    if(distanceToCover <= 20)
-                    {
-                        amt = amounts.Where(x => x.Distance == 20).FirstOrDefault();
-                    }
-                    else if(distanceToCover > 20 && distanceToCover <= 30)
-                    {
-                        amt = amounts.Where(x => x.Distance == 30).FirstOrDefault();
-                    }
-                    else if(distanceToCover > 30 && distanceToCover <= 35)
-                    {
-                        amt = amounts.Where(x => x.Distance == 35).FirstOrDefault();
-                    }
-                    else if(distanceToCover > 35 && distanceToCover <= 45)
-                    {
-                        amt = amounts.Where(x => x.Distance == 45).FirstOrDefault();
-                    }
-                    else if(distanceToCover > 45 && distanceToCover <= 60 )
-                    {
-                        amt = amounts.Where(x => x.Distance == 60).FirstOrDefault();
-                    }
-                    else if(distanceToCover > 60 && distanceToCover <= 65 )
-                    {
-                        amt = amounts.Where(x => x.Distance == 65).FirstOrDefault();
-                    }
-                    else
-                    {
-                        amt = amounts.Where(x => x.Distance == 70).FirstOrDefault();
-                    }
+                    decimal distToCover = (decimal)distanceToCover;
+                    amt = 300 + (100 * distToCover);
                     if(item.DeliveryTime == Core.Enum.DeliveryTime.RigthAway)
                     {
                         item.ScheduledDeliveryDate = DateTimeOffset.Now;
                     }
                     
-                    if(amt.Amount > 0)
+                    if(amt > 0)
                     {
                         var location = new DeliveryLocation(item.BaseLocation.Address,
                         item.BaseLocation.Longitude,item.BaseLocation.Latitude,distanceToCover,item.TargetLocation.Longitude,
@@ -132,7 +105,7 @@ namespace Infrastructure.Data.Implementations
                         _unitOfWork.Repository<DeliveryLocation>().Add(location);
                         await _unitOfWork.Complete();
 
-                        var deliveryItem = new DeliveryItem(item.PickUpItems,amt.Amount,item.DeliveryTpe,
+                        var deliveryItem = new DeliveryItem(item.PickUpItems,amt,item.DeliveryTpe,
                         item.DeliveryTime,item.Carriers,
                         item.PickUpPhone,item.DropOffPhone,item.ImageUrl,delivery.Id,location.Id,item.ScheduledDeliveryDate);
                         items.Add(deliveryItem);
@@ -146,7 +119,7 @@ namespace Infrastructure.Data.Implementations
           
             if(model.DeliveryItems[0].DeliveryTpe == DeliveryTpe.Single)
             {
-                total = amt.Amount;
+                total = amt;
             }
             if(model.DeliveryItems[0].DeliveryTpe == DeliveryTpe.BulkDelivery)
             {

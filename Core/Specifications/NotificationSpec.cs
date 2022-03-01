@@ -11,7 +11,7 @@ namespace Core.Specifications
     {
         public NotificationSpec(string userId) : base(x => x.AppUserId == userId)
         {
-            AddOrderBy(x => x.DateCreated);
+            AddOrderByDecending(x => x.DateCreated);
         }
     }
 }

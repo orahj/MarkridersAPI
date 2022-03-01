@@ -17,7 +17,7 @@ namespace Core.Specifications
         {
             AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
-            AddOrderBy(x => x.DateCreated);
+            AddOrderByDecending(x => x.DateCreated);
             if(!string.IsNullOrEmpty(sort))
             {
                 switch(sort)
@@ -29,7 +29,7 @@ namespace Core.Specifications
                         AddOrderBy(a => a.TotalAmount);
                         break;
                     default:
-                        AddOrderBy(d => d.DateCreated);
+                        AddOrderByDecending(d => d.DateCreated);
                         break;
                 }
             }
@@ -40,19 +40,19 @@ namespace Core.Specifications
         {
             AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
-            AddOrderBy(x => x.DateCreated);
+            AddOrderByDecending(x => x.DateCreated);
         }
         public DeliverySpecification(string email) : base(x => x.Email == email)
         {
             AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
-            AddOrderBy(x => x.DateCreated);
+            AddOrderByDecending(x => x.DateCreated);
         }
         public DeliverySpecification(string email, string shipmentNo) : base(x =>x.Email == email && x.DeliveryNo == shipmentNo)
         {
              AddInclude(x => x.DeliveryItems);
             AddInclude(x => x.Transaction);
-            AddOrderBy(x => x.DateCreated);
+            AddOrderByDecending(x => x.DateCreated);
         }
     }
 }

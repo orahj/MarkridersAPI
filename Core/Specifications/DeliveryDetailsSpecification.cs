@@ -14,7 +14,7 @@ namespace Core.Specifications
             AddInclude(x => x.AppUser);
             AddInclude(x => x.Ratings);
             AddInclude(x => x.Deliveries);
-            AddOrderBy(x => x.DateCreated);
+            AddOrderByDecending(x => x.DateCreated);
         }
 
         public DeliveryDetailsSpecification(int deliveryId) : base(x => x.DeliveriesId == deliveryId)

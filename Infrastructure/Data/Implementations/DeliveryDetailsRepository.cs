@@ -50,7 +50,7 @@ namespace Infrastructure.Data.Implementations
             var delivery = await _unitOfWork.Repository<Delivery>().GetEntityWithSpec(deliverySpec);
             if (delivery != null)
             {
-                //update delivery status to asigned
+                //update delivery status to canceled
                 foreach (var item in delivery.DeliveryItems)
                 {
                     var deliveryitem = await _unitOfWork.Repository<DeliveryItem>().GetByIdAsync(item.Id);
@@ -148,13 +148,33 @@ namespace Infrastructure.Data.Implementations
             //save delivery to get Id
             await _unitOfWork.Complete();
 
-            //notification
+            //User notification
             var userEmail = await _userManager.FindByEmailAsync(deliverydetails.Email);
             if (userEmail != null)
             {
                 var notification = new Notification
                 {
                     AppUserId = userEmail.Id.ToString(),
+                    DateCreated = DateTime.Now,
+                    Read = false,
+                    Type = NotificationType.DeliveryUpdate,
+                    Data = new Dictionary<string, string>
+                    {
+                        { "Title", $"Delivery Assigned: {deliverydetails.DeliveryNo}" },
+                        { "Body", $"Your delivery has been assigned, on {DateTime.Now}. Delivery Number is {deliverydetails.DeliveryNo}." },
+                        { "DeliveryId", $"{delivery.Id}"}
+                    }
+                };
+                _unitOfWork.Repository<Notification>().Add(notification);
+                await _unitOfWork.Complete();
+            }
+            //rider notification 
+            var riderEmail = await _userManager.FindByIdAsync(model.AppUserId);
+            if (riderEmail != null)
+            {
+                var notification = new Notification
+                {
+                    AppUserId = riderEmail.Id.ToString(),
                     DateCreated = DateTime.Now,
                     Read = false,
                     Type = NotificationType.DeliveryUpdate,

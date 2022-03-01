@@ -82,7 +82,7 @@ namespace Infrastructure.Data.Implementations
                 Type = NotificationType.WalletUpdate,
                 Data = new Dictionary<string, string>
                     {
-                        { "Title", $"Delvery Payment:Wallet. Amount: {data.amount}" },
+                        { "Title", $"Delivery Payment:Wallet. Amount: {data.amount}" },
                         { "Body", $"You just made payment from your wallet; {data.amount}, on {DateTime.Now}. New balance is {wallet.Balance}." },
                         { "WalletId", $"{wallet.Id}"}
                     }
@@ -146,8 +146,8 @@ namespace Infrastructure.Data.Implementations
                             Type = NotificationType.WalletUpdate,
                             Data = new Dictionary<string, string>
                             {
-                                { "Title", $"Wallet Funding. Amount: {data.Amount}" },
-                                { "Body", $"You credited your wallet with {data.Amount}, on {DateTime.Now}. New balance is {wallet.Balance}." },
+                                { "Title", $"Wallet Funding. Amount: {paystack.data.amount}" },
+                                { "Body", $"You credited your wallet with {paystack.data.amount}, on {DateTime.Now}. New balance is {wallet.Balance}." },
                                 { "WalletId", $"{wallet.Id}"}
                             }
                         };
