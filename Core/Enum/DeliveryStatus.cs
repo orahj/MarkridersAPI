@@ -18,7 +18,7 @@ namespace Core.Enum
           Disputed = 6,
         [EnumMember(Value = "Canceled")]
         Canceled = 7,
-        [EnumMember(Value = "Canceled")]
+        [EnumMember(Value = "Created")]
         Created = 8
     }
 }
