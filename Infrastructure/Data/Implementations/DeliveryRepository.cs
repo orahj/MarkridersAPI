@@ -92,7 +92,8 @@ namespace Infrastructure.Data.Implementations
                     //amount = kilometer * 100 + 300
                     decimal distToCover = (decimal)distanceToCover;
                     amt = 300 + (100 * distToCover);
-                    if(item.DeliveryTime == Core.Enum.DeliveryTime.RigthAway)
+                    amt = Math.Truncate(amt);
+                    if (item.DeliveryTime == Core.Enum.DeliveryTime.RigthAway)
                     {
                         item.ScheduledDeliveryDate = DateTimeOffset.Now;
                     }
@@ -125,7 +126,7 @@ namespace Infrastructure.Data.Implementations
             {
                 total = items.Sum(x => x.DeliveryAmount);
             }
-           
+            total = Math.Truncate(total);
             var amountWithCharge = await _paymentRepository.GetPaymentCharges(total);
             Transaction tran = new Transaction(total, amountWithCharge.Total);
             _unitOfWork.Repository<Transaction>().Add(tran);
