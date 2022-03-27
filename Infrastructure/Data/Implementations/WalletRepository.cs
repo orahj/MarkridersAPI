@@ -57,7 +57,8 @@ namespace Infrastructure.Data.Implementations
             }
             var invoiceNo = _security.GetCode("inv").ToUpper();
             var slnNo = _security.GetCode("sln").ToUpper();
-            Payment payment = new Payment(data.UserId,Core.Enum.PaymentMethod.Wallet,slnNo,invoiceNo,false,data.TransactionRef,data.TransactionId);
+            var tranRef = _security.GetCode("Wal-").ToUpper();
+            Payment payment = new Payment(data.UserId,Core.Enum.PaymentMethod.Wallet,slnNo,invoiceNo,false, tranRef, data.TransactionId);
             _unitOfWork.Repository<Payment>().Add(payment);
             
             //update wallet amount
@@ -68,7 +69,7 @@ namespace Infrastructure.Data.Implementations
 
             //Create wallet tranaction
             WalletTransaction transaction = new WalletTransaction(wallet.Id,Core.Enum.TransactionType.FundRequest,data.amount,
-            "Withdrwal",data.TransactionRef,Core.Enum.WalletTransactionStatus.Successful);
+            "Withdrwal", tranRef, Core.Enum.WalletTransactionStatus.Successful);
             _unitOfWork.Repository<WalletTransaction>().Add(transaction);
 
             //save changes to context

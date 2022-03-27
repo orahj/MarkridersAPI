@@ -83,6 +83,7 @@ namespace Infrastructure.Data.Implementations
                     }
                       //get distance covered
                     double distanceToCover = CalculateDistance(item.BaseLocation,item.TargetLocation);
+                    distanceToCover = Math.Round(Math.Abs(distanceToCover));
                     //get distance amount
                    
                     var amounts = await _unitOfWork.Repository<DeliveryDistance>().ListAllAsync();
@@ -92,7 +93,7 @@ namespace Infrastructure.Data.Implementations
                     //amount = kilometer * 100 + 300
                     decimal distToCover = (decimal)distanceToCover;
                     amt = 300 + (100 * distToCover);
-                    amt = Math.Truncate(amt);
+                    amt = Math.Round(Math.Abs(amt));
                     if (item.DeliveryTime == Core.Enum.DeliveryTime.RigthAway)
                     {
                         item.ScheduledDeliveryDate = DateTimeOffset.Now;

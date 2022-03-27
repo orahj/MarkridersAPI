@@ -317,7 +317,7 @@ namespace Infrastructure.Data.Implementations
                 var deliverydetails = await _unitOfWork.Repository<DeliveryDetails>().GetEntityWithSpec(deldetailsSpec);
                 if (deliverydetails == null)
                 {
-                    return new Result { IsSuccessful = false, Message = "Only asigned deliveries can be cancelled!" };
+                    return new Result { IsSuccessful = false, Message = "Only asigned deliveries can be completed!" };
                 }
                 //delivery status
                 if (deliverydetails.Deliverystatus == "Completed")
@@ -468,7 +468,7 @@ namespace Infrastructure.Data.Implementations
                 var deliverydetails = await _unitOfWork.Repository<DeliveryDetails>().GetEntityWithSpec(deldetailsSpec);
                 if (deliverydetails == null)
                 {
-                    return new Result { IsSuccessful = false, Message = "Only asigned deliveries can be cancelled!" };
+                    return new Result { IsSuccessful = false, Message = "Only asigned deliveries can be ended!" };
                 }
                 //delivery status
                 if (deliverydetails.Deliverystatus != "Started" || deliverydetails.Deliverystatus == "Processing" || deliverydetails.Deliverystatus == "Completed"
@@ -485,6 +485,7 @@ namespace Infrastructure.Data.Implementations
                     await _unitOfWork.Complete();
                 }
                 deliverydetails.Deliverystatus = "Delivered";
+                deliverydetails.IsCompleted = true;
                 _unitOfWork.Repository<DeliveryDetails>().Update(deliverydetails);
                 await _unitOfWork.Complete();
 
