@@ -397,7 +397,7 @@ namespace Infrastructure.Data.Implementations
                 }
                 
                 //delivery status
-                if(deliverydetails.Deliverystatus != "Completed" || deliverydetails.Deliverystatus =="Started" || deliverydetails.Deliverystatus == "Processing")
+                if(deliverydetails.Deliverystatus != "Delivered" || deliverydetails.Deliverystatus =="Started" || deliverydetails.Deliverystatus == "Processing")
                 {
                     return new Result { IsSuccessful = false, Message = "Delivery in progress!" };
                 }
@@ -501,14 +501,15 @@ namespace Infrastructure.Data.Implementations
                         Type = NotificationType.DeliveryUpdate,
                         Data = new Dictionary<string, string>
                             {
-                                { "Title", $"Delivery Delivered: {delivery.DeliveryNo}" },
-                                { "Body", $"You just delivered this delivery, on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
+                                { "Title", $"Package Delivered: {delivery.DeliveryNo}" },
+                                { "Body", $"Your package has been delivered on {DateTime.Now}. Delivery Number is {delivery.DeliveryNo}." },
                                 { "DeliveryId", $"{delivery.Id}"}
                             }
                     };
                     _unitOfWork.Repository<Notification>().Add(notification);
                     await _unitOfWork.Complete();
                 }
+
             }
 
             return new Result { IsSuccessful = true, Message = "Delivery fulfilled!" };

@@ -10,6 +10,7 @@ using Core.Entities.Identity;
 using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
+using GeoCoordinatePortable;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,9 +82,16 @@ namespace Infrastructure.Data.Implementations
                             item.TargetLocation = model.DeliveryItems[i].TargetLocation;
                         }
                     }
-                      //get distance covered
-                    double distanceToCover = CalculateDistance(item.BaseLocation,item.TargetLocation);
+
+                    //new Implementation for distance covered.
+                    var sCoord = new GeoCoordinate(item.BaseLocation.Latitude, item.BaseLocation.Longitude
+                        );
+                    var eCoord = new GeoCoordinate(item.TargetLocation.Latitude, item.TargetLocation.Longitude);
+
+                    //get distance covered
+                    double distanceToCover = sCoord.GetDistanceTo(eCoord);
                     distanceToCover = Math.Round(Math.Abs(distanceToCover));
+                    distanceToCover = distanceToCover / 1000;
                     //get distance amount
                    
                     var amounts = await _unitOfWork.Repository<DeliveryDistance>().ListAllAsync();
