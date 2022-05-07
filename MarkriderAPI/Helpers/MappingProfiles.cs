@@ -20,6 +20,7 @@ namespace MarkriderAPI.Helpers
             CreateMap<Delivery,DeliveryReturnDTO>();
             CreateMap<DeliveryItem,DeliveryItemReturnDTO>();
             CreateMap<DeliveryLocation,DeliveryLocationReturnDTO>();
+            CreateMap<Rider, Rider>();
         }
     }
 }

@@ -29,13 +29,16 @@ namespace MarkriderAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IDeliveryRepository _repo;
         private readonly IDeliveryDetailsRepository _deliveryDetailsRepository;
+        private readonly IRiderRepository _riderRepository;
         private readonly UserManager<AppUser> _userManager;
-        public DeliveryController(IMapper mapper, IDeliveryRepository repo, IDeliveryDetailsRepository deliveryDetailsRepository, UserManager<AppUser> userManager)
+        public DeliveryController(IMapper mapper, IDeliveryRepository repo, 
+            IDeliveryDetailsRepository deliveryDetailsRepository, UserManager<AppUser> userManager, IRiderRepository riderRepository)
         {
             _mapper = mapper;
             _repo = repo;
             _deliveryDetailsRepository = deliveryDetailsRepository;
             _userManager = userManager;
+            _riderRepository = riderRepository;
         }
         [HttpGet]
         public async Task<ActionResult<IReadOnlyList<Delivery>>> GetDeliveries(string sort, string email,[FromQuery] SpecParams specParams)
@@ -45,8 +48,14 @@ namespace MarkriderAPI.Controllers
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
            return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
+        [HttpGet("all-deliveries")]
+        public async Task<ActionResult<IReadOnlyList<DeliveryAignmentDTO>>> GetDeliveriesForAsigment()
+        {
+            var res = await _repo.GetDeliveryForAsignmentAsync();
+            return Ok(res);
+        }
 
-         [HttpGet("{id}")]
+        [HttpGet("{id}")]
          [ProducesResponseType(StatusCodes.Status200OK)]
          [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
 
@@ -70,7 +79,13 @@ namespace MarkriderAPI.Controllers
            //var data = _mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryDTO>>(res);
            return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
-         [HttpGet("get-delivery-by-shipment/{shipmentNo}/{email}")]
+        [HttpGet("get-active-riders")]
+        public async Task<ActionResult<IReadOnlyList<Rider>>> GetActiveRiders(string email)
+        {
+            var res = await _repo.GetRiderListAsync();
+            return Ok(res);
+        }
+        [HttpGet("get-delivery-by-shipment/{shipmentNo}/{email}")]
         public async Task<ActionResult<DeliveryReturnDTO>> GetDeliveriesNoEmail(string shipmentNo, string email)
         {
             //var email = HttpContext.User.RetrieveEmailFromPrincipal();
@@ -252,6 +267,14 @@ namespace MarkriderAPI.Controllers
             if (delivery == null) return BadRequest(new ApiResponse(400, "Error occured while canceling delivery"));
 
             return delivery;
+        }
+        [HttpGet("riders-list")]
+        public async Task<ActionResult<Result>> ListOfRiders()
+        {
+            var riders = await _riderRepository.GetListOfRiders();
+            if (riders == null) return BadRequest(new ApiResponse(404, "No riders found!"));
+
+            return riders;
         }
         [HttpGet("get-cancellation-reason")]
         public async Task<ActionResult> GetcanellationReason()

@@ -19,6 +19,7 @@ namespace Core.DTOs.Delivery
         public DateTimeOffset ScheduledDeliveryDate { get; set; }
         public DeliveryLocationDTO BaseLocation { get; set; }
         public DeliveryLocationDTO TargetLocation { get; set; }
+        public double Distance { get; set; }
     }
      public class DeliveryItemReturnDTO
     {

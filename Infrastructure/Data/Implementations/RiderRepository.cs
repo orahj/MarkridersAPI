@@ -6,15 +6,18 @@ using Core.DTOs;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data.Implementations
 {
     public class RiderRepository : IRiderRepository
     {
         private readonly IUnitOfWork _unitOfWork;
-        public RiderRepository(IUnitOfWork unitOfWork)
+        private readonly MarkRiderContext _context;
+        public RiderRepository(IUnitOfWork unitOfWork, MarkRiderContext context)
         {
             _unitOfWork = unitOfWork;
+            _context = context;
         }
 
         public async Task<bool> ChangeStatus(RiderStatusDTO riderStatusDTO)
@@ -37,6 +40,29 @@ namespace Infrastructure.Data.Implementations
             //save delivery to get Id
             await _unitOfWork.Complete();
             return rider;
+        }
+
+        public async Task<Result> GetListOfRiders()
+        {
+            var riders = await _context.Riders.Include(x=>x.AppUser).ToListAsync();
+            var ridersDto = new List<RiderDetailsDTO>();
+            riders.ForEach((rider) => {
+                var riderDto = new RiderDetailsDTO
+                {
+                    AccountNumber = rider.AccountNumber,
+                    AppUserId = rider.AppUserId,
+                    BankCode = rider.BankCode,
+                    BVN = rider.BVN,
+                    ValidID = rider.ValidID,
+                    Id = rider.Id,
+                    FirstName = rider.AppUser.FirstName,
+                    LastName = rider.AppUser.LastName
+                };
+
+                ridersDto.Add(riderDto);
+            });
+
+            return new Result { IsSuccessful = true, ReturnedObject = ridersDto };
         }
 
         public async Task<Result> GetRiderIs(string Id)

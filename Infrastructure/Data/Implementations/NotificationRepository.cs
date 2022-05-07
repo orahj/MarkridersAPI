@@ -5,6 +5,7 @@ using Core.Entities.Identity;
 using Core.Interfaces;
 using Core.Specifications;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,12 @@ namespace Infrastructure.Data.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
-        public NotificationRepository(IUnitOfWork unitOfWork, UserManager<AppUser> userManager) 
+        private readonly MarkRiderContext _context;
+        public NotificationRepository(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, MarkRiderContext context) 
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _context = context;
         }
         public async Task<Result> DeleteAllNotifications(string email)
         {
@@ -60,8 +63,11 @@ namespace Infrastructure.Data.Implementations
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return new Result { IsSuccessful = false, Message = "User not found" };
             var spec = new NotificationSpec(user.Id.ToString());
-            var notification = await _unitOfWork.Repository<Notification>().ListAsync(spec);
-            return new Result { IsSuccessful = true, ReturnedObject = notification };
+            var newNotification = await _context.Notifications.Where(x => x.AppUserId == user.Id.ToString() && !x.Read)
+               .OrderByDescending(x => x.Id)
+               .ToListAsync();
+            //var notification = await _unitOfWork.Repository<Notification>().ListAsync(spec);
+            return new Result { IsSuccessful = true, ReturnedObject = newNotification };
         }
 
         public Task<Result> GetUserNotificationsByDate(UserNotificationsByDateDto data)
@@ -74,8 +80,11 @@ namespace Infrastructure.Data.Implementations
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return new Result { IsSuccessful = false, Message = "User not found" };
             var spec = new NotificationSpec(user.Id.ToString());
-            var notifications = await _unitOfWork.Repository<Notification>().ListAsync(spec);
-            foreach (var notification in notifications)
+            var newNotification = await _context.Notifications.Where(x => x.AppUserId == user.Id.ToString())
+                .OrderByDescending(x=>x.Id)
+                .ToListAsync();
+            //var notifications = await _unitOfWork.Repository<Notification>().ListAsync(spec);
+            foreach (var notification in newNotification)
             {
                 notification.Read = true;
                 _unitOfWork.Repository<Notification>().Update(notification);

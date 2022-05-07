@@ -233,7 +233,7 @@ namespace Infrastructure.Data.Implementations
                             Type = NotificationType.WalletUpdate,
                             Data = new Dictionary<string, string>
                             {
-                                { "Title", $"Delvery Payment:Paystack. Amount: {pstk.data.amount}" },
+                                { "Title", $"Delivery Payment:Paystack. Amount: {pstk.data.amount}" },
                                 { "Body", $"You just made payment with paystack; {pstk.data.amount}, on {DateTime.Now}." },
                                 { "WalletId", $"{payment.Id}"}
                             }

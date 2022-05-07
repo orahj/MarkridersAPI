@@ -1,3 +1,4 @@
+using Core.Enum;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,6 +23,16 @@ namespace Core.DTOs.Delivery
         public int? transactionId { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public virtual IReadOnlyList<DeliveryItemReturnDTO> DeliveryItems { get; set; }
+    }
+    public class DeliveryAignmentDTO
+    {
+        public int Id { get; set; }
+        public string DeliveryNo { get; set; }
+        public string Email { get; set; }
+        public decimal TotalAmount { get; set; }
+        public int? transactionId { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
+        public DeliveryStatus DeliveryStatus { get; set; }
     }
     public class AsigndeliveryDTO
     {

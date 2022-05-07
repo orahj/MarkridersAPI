@@ -11,6 +11,7 @@ using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
 using GeoCoordinatePortable;
+using Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,13 +23,17 @@ namespace Infrastructure.Data.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPaymentRepository _paymentRepository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly MarkRiderContext _context;
+        private const int DISTANCE_ABOVE_10_KM = 10;
+        private const int DISTANCE_BELOW_10_KM = 5;
 
-        public DeliveryRepository(ISecurityService security, IUnitOfWork unitOfWork, IPaymentRepository paymentRepository, UserManager<AppUser> userManager)
+        public DeliveryRepository(ISecurityService security, IUnitOfWork unitOfWork, IPaymentRepository paymentRepository, UserManager<AppUser> userManager, MarkRiderContext context)
         {
             _paymentRepository = paymentRepository;
             _unitOfWork = unitOfWork;
             _security = security;
             _userManager = userManager;
+            _context = context;
         }
 
         public async Task<Delivery> CreateDeliveryAsync(DeliveryDTO model)
@@ -92,6 +97,14 @@ namespace Infrastructure.Data.Implementations
                     double distanceToCover = sCoord.GetDistanceTo(eCoord);
                     distanceToCover = Math.Round(Math.Abs(distanceToCover));
                     distanceToCover = distanceToCover / 1000;
+                    if (distanceToCover > 10) 
+                    { 
+                        distanceToCover = DISTANCE_ABOVE_10_KM + distanceToCover; 
+                    }
+                    else
+                    {
+                        distanceToCover = DISTANCE_BELOW_10_KM + distanceToCover;
+                    }
                     //get distance amount
                    
                     var amounts = await _unitOfWork.Repository<DeliveryDistance>().ListAllAsync();
@@ -100,8 +113,11 @@ namespace Infrastructure.Data.Implementations
                     //100 naira per kilometer plus base fair
                     //amount = kilometer * 100 + 300
                     decimal distToCover = (decimal)distanceToCover;
-                    amt = 300 + (100 * distToCover);
+                    amt = 200 + (90 * distToCover);
                     amt = Math.Round(Math.Abs(amt));
+                    int convertedAmount = (int)amt;
+                    int roundednumber = convertedAmount.RoundOff();
+                    amt = (decimal)roundednumber;
                     if (item.DeliveryTime == Core.Enum.DeliveryTime.RigthAway)
                     {
                         item.ScheduledDeliveryDate = DateTimeOffset.Now;
@@ -110,7 +126,7 @@ namespace Infrastructure.Data.Implementations
                     if(amt > 0)
                     {
                         var location = new DeliveryLocation(item.BaseLocation.Address,
-                        item.BaseLocation.Longitude,item.BaseLocation.Latitude,distanceToCover,item.TargetLocation.Longitude,
+                        item.BaseLocation.Longitude,item.BaseLocation.Latitude, (double)distToCover, item.TargetLocation.Longitude,
                         item.TargetLocation.Latitude,item.TargetLocation.Address);
                         _unitOfWork.Repository<DeliveryLocation>().Add(location);
                         await _unitOfWork.Complete();
@@ -159,7 +175,7 @@ namespace Infrastructure.Data.Implementations
                  _unitOfWork.Repository<DeliveryLocation>().Add(item);
             }
            
-            updateDel.DeliveryItems = items;
+                updateDel.DeliveryItems = items;
             //add notification record
             var userEmail = await _userManager.FindByEmailAsync(model.Email);
             if (userEmail != null)
@@ -199,13 +215,20 @@ namespace Infrastructure.Data.Implementations
 
         public async Task<IReadOnlyList<Delivery>> GetDeliveryAsync()
         {
-          return await _unitOfWork.Repository<Delivery>().ListAllAsync();
+            //  var spec = new DeliverySpecification();
+            //return await _unitOfWork.Repository<Delivery>().ListAsync(spec);
+            return await _context.Deliveries.OrderByDescending(x => x.Id).Include(x => x.DeliveryItems).ToListAsync();
         }
 
         public async Task<IReadOnlyList<Delivery>> GetDeliveryByEmailAsync(string email)
         {
-            var spec = new DeliverySpecification(email);
-             return await _unitOfWork.Repository<Delivery>().ListAsync(spec);
+            //var spec = new DeliverySpecification(email);
+            var del = await _context.Deliveries.Where(x => x.Email == email)
+                .Include(x => x.DeliveryItems)
+                .Include(x => x.Transaction)
+                .OrderByDescending(x => x.Id).ToListAsync();
+            // return await _unitOfWork.Repository<Delivery>().ListAsync(spec);
+            return del;
         }
         public async Task<Delivery> GetDeliveryByDeliveryNoAsync(string email,string shipmentNo)
         {
@@ -286,5 +309,35 @@ namespace Infrastructure.Data.Implementations
         {
            return await _unitOfWork.Repository<DeliveryCancelationReasons>().ListAllAsync();
         }
+
+        public async Task<IReadOnlyList<Rider>> GetRiderListAsync()
+        {
+            return await _unitOfWork.Repository<Rider>().ListAllAsync();
+        }
+
+        public async Task<IReadOnlyList<DeliveryAignmentDTO>> GetDeliveryForAsignmentAsync()
+        {
+            List<DeliveryAignmentDTO> data = new List<DeliveryAignmentDTO>();
+            var res =  await _context.Deliveries.Include(x => x.DeliveryItems).OrderByDescending(x=>x.Id).ToListAsync();
+
+            foreach(var item in res)
+            {
+                var deliveryitem = await _context.DeliveryItems.Where(x => x.DeliveryId == item.Id).FirstOrDefaultAsync();
+
+                var deliveryDto = new DeliveryAignmentDTO
+                {
+                    Id = item.Id,
+                    DeliveryNo = item.DeliveryNo,
+                    Email = item.Email,
+                    DeliveryStatus = deliveryitem != null ? deliveryitem.DeliveryStatus: DeliveryStatus.Canceled,
+                    TotalAmount = item.TotalAmount,
+                    DateCreated = item.DateCreated
+                };
+                data.Add(deliveryDto);
+            }
+
+            return data;
+        }
+
     }
 }

@@ -10,6 +10,7 @@ using Core.Enum;
 using Core.Interfaces;
 using Core.Specifications;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Data.Implementations
@@ -20,15 +21,17 @@ namespace Infrastructure.Data.Implementations
         private readonly IConfiguration _config;
         private readonly ISecurityService _security;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly MarkRiderContext _context;
         private readonly UserManager<AppUser> _userManager;
         public WalletRepository(IUnitOfWork unitOfWork,IConfiguration config,ISecurityService security,
-        IPaymentRepository paymentRepository, UserManager<AppUser> userManager)
+        IPaymentRepository paymentRepository, UserManager<AppUser> userManager,MarkRiderContext context)
         {
             _paymentRepository = paymentRepository;
             _security = security;
             _config = config;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _context = context;
         }
 
         public async Task<Result> CreateWallet(CreateWalletDTO data)
@@ -176,12 +179,13 @@ namespace Infrastructure.Data.Implementations
             var wallet = await _unitOfWork.Repository<Wallet>().GetEntityWithSpec(spec);
             if(wallet == null) return new Result{IsSuccessful = false, Message="Wallet does not exist!"};
             var walletTranSpec = new WalletTransactionSpec(wallet.Id);
-            var walletTransactions = await _unitOfWork.Repository<WalletTransaction>().ListAsync(walletTranSpec);
+            var walTransactions = await _context.WalletTransactions.Where(x => x.WalletId == wallet.Id).OrderByDescending(x=>x.Id).ToListAsync();
+            //var walletTransactions = await _unitOfWork.Repository<WalletTransaction>().ListAsync(walletTranSpec);
             var result = new Result
             {
                 IsSuccessful = true,
-                Message = walletTransactions == null ? "No wallet transaction record found" : null,
-                ReturnedObject = walletTransactions
+                Message = walTransactions == null ? "No wallet transaction record found" : null,
+                ReturnedObject = walTransactions
             };
 
             return result;

@@ -195,11 +195,14 @@ namespace Infrastructure.Data.Implementations
         {
             var delDetails = new List<DeliveryDetails>();
             var spec = new DeliveryDetailsSpecification(userId);
-            var deliveries = await _unitOfWork.Repository<DeliveryDetails>().ListAsync(spec);
+            //var deliveries = await _unitOfWork.Repository<DeliveryDetails>().ListAsync(spec);
+            var riderdeliveries = await _context.DeliveryDetails.Include(x=>x.Deliveries).Where(x => x.AppUserId == userId)
+                .OrderByDescending(x => x.Id)
+                .ToListAsync();
             var ratings = new Ratings();
-            if(deliveries != null)
+            if(riderdeliveries != null)
             {
-                foreach(var item in deliveries)
+                foreach(var item in riderdeliveries)
                 {
                     if(item.RatingId != null)
                     {
@@ -397,7 +400,7 @@ namespace Infrastructure.Data.Implementations
                 }
                 
                 //delivery status
-                if(deliverydetails.Deliverystatus != "Delivered" || deliverydetails.Deliverystatus =="Started" || deliverydetails.Deliverystatus == "Processing")
+                if(deliverydetails.Deliverystatus =="Started" || deliverydetails.Deliverystatus == "Processing")
                 {
                     return new Result { IsSuccessful = false, Message = "Delivery in progress!" };
                 }
@@ -447,7 +450,7 @@ namespace Infrastructure.Data.Implementations
                 }
             }
 
-            return new Result { IsSuccessful = true, Message = "Delivery Disputed!" };
+            return new Result { IsSuccessful = true, Message = "Dispute submitted!" };
 
         }
         public async Task<Result> FulfilledDeliveryAsync(DeliverydeliveredDTO model)

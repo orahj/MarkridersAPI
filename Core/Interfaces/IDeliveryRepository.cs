@@ -13,6 +13,7 @@ namespace Core.Interfaces
     {
         Task<Delivery> GetDeliveryByIdAsync(int Id);
         Task<IReadOnlyList<Delivery>> GetDeliveryAsync();
+        Task<IReadOnlyList<DeliveryAignmentDTO>> GetDeliveryForAsignmentAsync();
         Task<IReadOnlyList<Delivery>> GetDeliveryByEmailAsync(string email);
         Task<DeliveryItem> GetDeliveryItemByIdAsync(int Id);
         Task<DeliveryItem> GetDeliveryItemByDeliveryIdAsync(int Id, int deliveryId);
@@ -28,6 +29,7 @@ namespace Core.Interfaces
         Task<IReadOnlyList<Delivery>> GetDeliveryForUserAsync(string sort, string email, SpecParams specParams);
         Task<Delivery> GetDeliveryByDeliveryNoAsync(string email,string shipmentNo);
         Task<IReadOnlyList<DeliveryCancelationReasons>> GetCancelationReasonsAsync();
+        Task<IReadOnlyList<Rider>> GetRiderListAsync();
 
     }
 }
