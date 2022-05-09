@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.DTOs;
 using Core.DTOs.Delivery;
 using Core.Entities;
+using Core.Entities.Identity;
 using Core.Specifications;
 
 namespace Core.Interfaces
@@ -30,6 +31,8 @@ namespace Core.Interfaces
         Task<Delivery> GetDeliveryByDeliveryNoAsync(string email,string shipmentNo);
         Task<IReadOnlyList<DeliveryCancelationReasons>> GetCancelationReasonsAsync();
         Task<IReadOnlyList<Rider>> GetRiderListAsync();
+        Task<IReadOnlyList<Rider>> GetRiderListAllAsync();
+        Task<IReadOnlyList<AppUser>> GetUsersListAllAsync();
 
     }
 }

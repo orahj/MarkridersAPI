@@ -250,7 +250,17 @@ namespace MarkriderAPI.Controllers
                 ReturnedObject = usr
             };
         }
-
+        [HttpGet("get-user-details/{id}")]
+        public async Task<ActionResult<Result>> GetUserById(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return new Result
+            {
+                IsSuccessful = true,
+                Message = "User retrieved successfully!",
+                ReturnedObject = user
+            };
+        }
         [HttpPost("send-password-resetLink")]
         [AllowAnonymous]
         public async Task<ActionResult<Result>> SendPasswordResetLink([FromBody] SendPasswordResetDto data)
@@ -398,6 +408,7 @@ namespace MarkriderAPI.Controllers
             user.CompanyName = model.CompanyName ?? user.CompanyName;
             user.BusinessName = model.BusinessName ?? user.BusinessName;
             user.BusinessNumber = model.BusinessNumber ?? user.BusinessNumber;
+            user.Address = model.Address ?? user.Address;
 
             var result = await _userManager.UpdateAsync(user);
         }

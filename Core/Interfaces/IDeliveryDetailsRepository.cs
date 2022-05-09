@@ -19,6 +19,7 @@ namespace Core.Interfaces
         Task<Result> DisputedDeliveryAsync(DeliveryDisputedDTO model);
         Task<Result> FulfilledDeliveryAsync(DeliverydeliveredDTO model);
         Task<Result> RidersalesAsync(string userId);
+        Task<Result> TotalSalesAsync();
         Task<Result> StartDeliveryAsync(DeliverydeliveredDTO model);
     }
 }

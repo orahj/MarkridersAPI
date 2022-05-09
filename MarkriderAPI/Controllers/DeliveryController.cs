@@ -80,9 +80,21 @@ namespace MarkriderAPI.Controllers
            return Ok(_mapper.Map<IReadOnlyList<Delivery>,IReadOnlyList<DeliveryReturnDTO>>(res));
         }
         [HttpGet("get-active-riders")]
-        public async Task<ActionResult<IReadOnlyList<Rider>>> GetActiveRiders(string email)
+        public async Task<ActionResult<IReadOnlyList<Rider>>> GetActiveRiders()
         {
             var res = await _repo.GetRiderListAsync();
+            return Ok(res);
+        }
+        [HttpGet("get-all-riders")]
+        public async Task<ActionResult<IReadOnlyList<Rider>>> GetAllRiders()
+        {
+            var res = await _repo.GetRiderListAllAsync();
+            return Ok(res);
+        }
+        [HttpGet("get-all-users")]
+        public async Task<ActionResult<IReadOnlyList<Rider>>> GetAllUsers()
+        {
+            var res = await _repo.GetUsersListAllAsync();
             return Ok(res);
         }
         [HttpGet("get-delivery-by-shipment/{shipmentNo}/{email}")]
@@ -226,6 +238,14 @@ namespace MarkriderAPI.Controllers
                 return NotFound(new ApiResponse(404));
             }
             var sales = await _deliveryDetailsRepository.RidersalesAsync(userEmail.Id.ToString());
+            if (sales == null) return BadRequest(new ApiResponse(400, "Error occured while getting deliveries"));
+
+            return sales;
+        }
+        [HttpGet("get-total-sales-record")]
+        public async Task<ActionResult<Result>> GetTotalSalesRecord()
+        {
+            var sales = await _deliveryDetailsRepository.TotalSalesAsync();
             if (sales == null) return BadRequest(new ApiResponse(400, "Error occured while getting deliveries"));
 
             return sales;

@@ -42,6 +42,7 @@ namespace Infrastructure.Data.Implementations
             //var rider = await _unitOfWork.Repository<Rider>().GetByIdAsync()
              //generate transaction ref
            var transactinref = _security.GetCode("DL").ToUpper();
+            double totalDistanceCovered = 0;
             decimal amt = 0;
             //create Delivery
             var delivery = new Delivery(transactinref,model.Email);
@@ -108,6 +109,7 @@ namespace Infrastructure.Data.Implementations
                     //get distance amount
                    
                     var amounts = await _unitOfWork.Repository<DeliveryDistance>().ListAllAsync();
+                    totalDistanceCovered = totalDistanceCovered + distanceToCover;
                     //TODO
                     //base fair 300 naira for bikes
                     //100 naira per kilometer plus base fair
@@ -126,7 +128,7 @@ namespace Infrastructure.Data.Implementations
                     if(amt > 0)
                     {
                         var location = new DeliveryLocation(item.BaseLocation.Address,
-                        item.BaseLocation.Longitude,item.BaseLocation.Latitude, (double)distToCover, item.TargetLocation.Longitude,
+                        item.BaseLocation.Longitude,item.BaseLocation.Latitude, totalDistanceCovered, item.TargetLocation.Longitude,
                         item.TargetLocation.Latitude,item.TargetLocation.Address);
                         _unitOfWork.Repository<DeliveryLocation>().Add(location);
                         await _unitOfWork.Complete();
@@ -312,7 +314,30 @@ namespace Infrastructure.Data.Implementations
 
         public async Task<IReadOnlyList<Rider>> GetRiderListAsync()
         {
-            return await _unitOfWork.Repository<Rider>().ListAllAsync();
+            var allRider = new List<Rider>();
+            var riders = await _context.Riders.Where(x=>x.RiderStatus ==true).Include(x => x.AppUser).OrderBy(x => x.Id).ToListAsync();
+            foreach(var item in riders)
+            {
+                var user = await _context.Users.Where(x => x.Id == new Guid(item.AppUserId)).FirstOrDefaultAsync();
+                item.AppUser = user;
+                allRider.Add(item);
+            }
+           
+            return allRider;
+        }
+
+        public async Task<IReadOnlyList<Rider>> GetRiderListAllAsync()
+        {
+            var allRider = new List<Rider>();
+            var riders = await _context.Riders.Include(x => x.AppUser).OrderBy(x => x.Id).ToListAsync();
+            foreach (var item in riders)
+            {
+                var user = await _context.Users.Where(x => x.Id == new Guid(item.AppUserId)).FirstOrDefaultAsync();
+                item.AppUser = user;
+                allRider.Add(item);
+            }
+
+            return allRider;
         }
 
         public async Task<IReadOnlyList<DeliveryAignmentDTO>> GetDeliveryForAsignmentAsync()
@@ -339,5 +364,10 @@ namespace Infrastructure.Data.Implementations
             return data;
         }
 
+        public async Task<IReadOnlyList<AppUser>> GetUsersListAllAsync()
+        {
+            var users = await _context.Users.Include(x=>x.State).Include(x=>x.Country).ToListAsync();
+            return users;   
+        }
     }
 }

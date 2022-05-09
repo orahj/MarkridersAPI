@@ -73,4 +73,11 @@ namespace Core.DTOs.Delivery
         public decimal Monthlysales { get; set; }
         public decimal Weeklysales { get; set; }
     }
+    public class TotalsalessDTO
+    {
+        public decimal GrossRevenure { get; set; }
+        public decimal NetRevenure { get; set; }
+        public int deliveryCount { get; set; }
+        public string TopRider { get; set; }
+    }
 }

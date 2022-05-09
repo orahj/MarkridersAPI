@@ -617,5 +617,32 @@ namespace Infrastructure.Data.Implementations
             // Return the week of our adjusted day
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(time, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
+
+        public async Task<Result> TotalSalesAsync()
+        {
+            var salesRecord = new TotalsalessDTO();
+            string highestUserSales = "";
+            int highestCount = 0;
+            var totalSales = await (from x in _context.DeliveryDetails where x.IsCompleted select x)
+                .Include(x => x.Deliveries)
+                .AsNoTracking().ToListAsync();
+            var topRider = totalSales.GroupBy(x => x.AppUserId)
+                .Select(x => new { UserId = x.Key, Sales = x.Count() });
+            foreach(var item in topRider)
+            {
+                if(item.Sales > highestCount)
+                {
+                    highestCount = item.Sales;
+                    var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == new Guid(item.UserId));
+                    highestUserSales = user.Email;
+                }
+            }
+            salesRecord.GrossRevenure = totalSales.Sum(x => x.DeliveryAmount);
+            salesRecord.NetRevenure = totalSales.Sum(x => x.DeliveryAmount);
+            salesRecord.deliveryCount = totalSales.Count();
+            salesRecord.TopRider = highestUserSales;
+            var deliveries = await _context.Deliveries.ToListAsync();
+            return new Result { IsSuccessful = true, Message = "Record retrieved successfully", ReturnedObject = salesRecord };
+        }
     }
 }
