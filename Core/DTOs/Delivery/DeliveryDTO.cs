@@ -79,5 +79,11 @@ namespace Core.DTOs.Delivery
         public decimal NetRevenure { get; set; }
         public int deliveryCount { get; set; }
         public string TopRider { get; set; }
+    }   
+    public class RiderSalesCount
+    {
+        public string Email { get; set; }
+        public int DeliveryCount { get; set; }
+        public string UserId { get; set; }
     }
 }

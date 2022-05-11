@@ -261,6 +261,17 @@ namespace MarkriderAPI.Controllers
                 ReturnedObject = user
             };
         }
+        [HttpGet("get-user-by-email/{email}")]
+        public async Task<ActionResult<Result>> GetUserByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return new Result
+            {
+                IsSuccessful = true,
+                Message = "User retrieved successfully!",
+                ReturnedObject = user
+            };
+        }
         [HttpPost("send-password-resetLink")]
         [AllowAnonymous]
         public async Task<ActionResult<Result>> SendPasswordResetLink([FromBody] SendPasswordResetDto data)

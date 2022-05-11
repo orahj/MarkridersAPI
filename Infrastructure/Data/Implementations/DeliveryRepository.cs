@@ -366,8 +366,13 @@ namespace Infrastructure.Data.Implementations
 
         public async Task<IReadOnlyList<AppUser>> GetUsersListAllAsync()
         {
-            var users = await _context.Users.Include(x=>x.State).Include(x=>x.Country).ToListAsync();
+            var users = await _context.Users.Where(x=>x.UserTypes == UserTypes.Riders || x.UserTypes == UserTypes.Users).Include(x=>x.State).Include(x=>x.Country).ToListAsync();
             return users;   
+        }
+        public async Task<IReadOnlyList<AppUser>> GetUsersListAllAdminAsync()
+        {
+            var users = await _context.Users.Where(x => x.UserTypes == UserTypes.SuperAdmin || x.UserTypes == UserTypes.AdminUser).Include(x => x.State).Include(x => x.Country).ToListAsync();
+            return users;
         }
     }
 }

@@ -33,6 +33,7 @@ namespace Core.Interfaces
         Task<IReadOnlyList<Rider>> GetRiderListAsync();
         Task<IReadOnlyList<Rider>> GetRiderListAllAsync();
         Task<IReadOnlyList<AppUser>> GetUsersListAllAsync();
+        Task<IReadOnlyList<AppUser>> GetUsersListAllAdminAsync();
 
     }
 }

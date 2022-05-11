@@ -11,6 +11,8 @@ namespace Core.Enum
         [EnumMember(Value = "Company")]
         Company=3,
         [EnumMember(Value = "Rider")]
-        Rider = 4
+        Rider = 4,
+        [EnumMember(Value = "Admins")]
+        Admin = 5
     }
 }

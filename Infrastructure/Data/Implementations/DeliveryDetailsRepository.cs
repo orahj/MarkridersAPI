@@ -644,5 +644,41 @@ namespace Infrastructure.Data.Implementations
             var deliveries = await _context.Deliveries.ToListAsync();
             return new Result { IsSuccessful = true, Message = "Record retrieved successfully", ReturnedObject = salesRecord };
         }
+
+        public async Task<Result> GetDeliveryCountForRider()
+        {
+            var totalCount = new RiderSalesCount();
+            var totalCountList = new List<RiderSalesCount>();
+            var totalSales = await (from x in _context.DeliveryDetails where x.IsCompleted select x)
+               .Include(x => x.Deliveries)
+               .AsNoTracking().ToListAsync();
+            var topRider = totalSales.GroupBy(x => x.AppUserId)
+                .Select(x => new { UserId = x.Key, Sales = x.Count() });
+
+            foreach (var item in topRider)
+            {
+                 var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == new Guid(item.UserId));
+                totalCount = new RiderSalesCount
+                {
+                    DeliveryCount = item.Sales,
+                    Email = user.Email,
+                    UserId = user.Id.ToString()
+                };
+                totalCountList.Add(totalCount);
+            }
+            return new Result { IsSuccessful = true, ReturnedObject = totalCountList };
+        }
+
+        public async Task<Result> GetDeliveryAsignToRider(string id)
+        {
+            var riderDelveries = await  _context.DeliveryDetails.Where(x => x.AppUserId == id)
+                .Include(x=>x.Deliveries)
+                .ThenInclude(d=>d.DeliveryItems)
+                .ThenInclude(l=>l.DeliveryLocation)
+                .Include(x=>x.Ratings)
+                .Include(x=>x.AppUser)
+                .ToListAsync();
+            return new Result { IsSuccessful = true, ReturnedObject = riderDelveries };
+        }
     }
 }

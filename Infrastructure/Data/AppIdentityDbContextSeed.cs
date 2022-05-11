@@ -17,14 +17,15 @@ namespace Infrastructure.Data
                 const string superUserRole = "superuser";
                 var user =  new AppUser
                 {
-                    UserName ="test@markrider@gmail.com",
-                    Email = "test@markrider@gmail.com",
+                    UserName ="admin@markrider@gmail.com",
+                    Email = "admin@markrider@gmail.com",
                     FirstName  = "Test",
                     LastName  ="Test",
                     Address  = "Test ",
                     Avatar  = "Tets",
                     IsActive  = true,
-                    UserTypes = UserTypes.Users,
+                    UserTypes = UserTypes.SuperAdmin,
+                    UserCategory = UserCategory.Admin,
                     DateRegistered = DateTime.UtcNow,
                     Gender  = Gender.Male,
                     StateId = 1,
