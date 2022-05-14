@@ -111,7 +111,7 @@ namespace Infrastructure.Data
         {
             var delivery = new []
             {
-                new Delivery{DeliveryNo  = "DEL-40392", Email = "test@markrider@gmail.com",TotalAmount  = 10000, DateCreated = DateTime.UtcNow}
+                new Delivery{DeliveryNo  = "DEL-40392", Email = "admin@markrider@gmail.com",TotalAmount  = 10000, DateCreated = DateTime.UtcNow}
             };
             context.Deliveries.AddRange(delivery);
              await context.SaveChangesAsync();

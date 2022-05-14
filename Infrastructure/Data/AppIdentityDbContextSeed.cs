@@ -32,7 +32,7 @@ namespace Infrastructure.Data
                     CountryId = 1
                 };
                 await userManager.CreateAsync(user,"P@$$w0rd");
-                await AddDefaultRoleToDefaultUser(userManager, superUserRole, user);
+               // await AddDefaultRoleToDefaultUser(userManager, superUserRole, user);
             }
             
         }
