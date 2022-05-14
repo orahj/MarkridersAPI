@@ -162,7 +162,7 @@ namespace Infrastructure.Data.Implementations
                     {
                         { "Title", $"Delivery Assigned: {deliverydetails.DeliveryNo}" },
                         { "Body", $"Your delivery has been assigned, on {DateTime.Now}. Delivery Number is {deliverydetails.DeliveryNo}." },
-                        { "DeliveryId", $"{delivery.Id}"}
+                        { "DeliveryId", $"{delivery.DeliveriesId}"}
                     }
                 };
                 _unitOfWork.Repository<Notification>().Add(notification);
@@ -182,7 +182,7 @@ namespace Infrastructure.Data.Implementations
                     {
                         { "Title", $"New delivery assigned: {deliverydetails.DeliveryNo}" },
                         { "Body", $"You have been assigned a delivery, on {DateTime.Now}. Delivery Number is {deliverydetails.DeliveryNo}." },
-                        { "DeliveryId", $"{delivery.Id}"}
+                        { "DeliveryId", $"{delivery.DeliveriesId}"}
                     }
                 };
                 _unitOfWork.Repository<Notification>().Add(notification);
