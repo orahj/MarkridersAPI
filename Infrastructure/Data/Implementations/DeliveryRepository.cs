@@ -356,8 +356,13 @@ namespace Infrastructure.Data.Implementations
                 foreach (var item in res)
                 {
                     var payment = await _context.Payments.Where(x => x.TransactionsId == item.transactionId).FirstOrDefaultAsync();
-                        int value = (int)payment.PaymentMethod;
-                        var paymentMethod = (PaymentMethod)value;
+                    var paymentMethod = new PaymentMethod();
+                        if (payment!= null)
+                        {
+                            int value = (int)payment.PaymentMethod;
+                            paymentMethod = (PaymentMethod)value;
+                        }
+                        
                         var deliveryitem = await _context.DeliveryItems.Where(x => x.DeliveryId == item.Id).FirstOrDefaultAsync();
 
                         var deliveryDto = new DeliveryAignmentDTO
