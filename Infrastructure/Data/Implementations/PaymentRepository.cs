@@ -135,7 +135,7 @@ namespace Infrastructure.Data.Implementations
                 Type = NotificationType.WalletUpdate,
                 Data = new Dictionary<string, string>
                 {
-                    { "Title", $"Delvery Payment:Transfer. Amount: {request.amount}" },
+                    { "Title", $"Delivery Payment:Transfer. Amount: {request.amount}" },
                     { "Body", $"You just made payment with transfer; {request.amount}, on {DateTime.Now}." },
                     { "WalletId", $"{payment.Id}"}
                 }

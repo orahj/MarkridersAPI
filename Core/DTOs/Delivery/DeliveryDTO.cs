@@ -33,6 +33,7 @@ namespace Core.DTOs.Delivery
         public int? transactionId { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public DeliveryStatus DeliveryStatus { get; set; }
+        public string PaymentMethod { get; set; }
     }
     public class AsigndeliveryDTO
     {

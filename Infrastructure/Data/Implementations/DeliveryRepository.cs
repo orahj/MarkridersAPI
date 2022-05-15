@@ -240,8 +240,13 @@ namespace Infrastructure.Data.Implementations
 
         public async Task<Delivery> GetDeliveryByIdAsync(int Id)
         {
-             var spec = new DeliverySpecification(Id);
-             return await _unitOfWork.Repository<Delivery>().GetEntityWithSpec(spec);
+            var del = await _context.Deliveries.Where(x => x.Id == Id)
+                .Include(x => x.DeliveryItems)
+                .Include(x=>x.DeliveryItems).ThenInclude(l => l.DeliveryLocation)
+                .FirstOrDefaultAsync();
+            //var spec = new DeliverySpecification(Id);
+            //return await _unitOfWork.Repository<Delivery>().GetEntityWithSpec(spec);
+            return del;
         }
 
         public async Task<IReadOnlyList<DeliveryDistance>> GetDeliveryDistanceAsync()
@@ -343,24 +348,35 @@ namespace Infrastructure.Data.Implementations
         public async Task<IReadOnlyList<DeliveryAignmentDTO>> GetDeliveryForAsignmentAsync()
         {
             List<DeliveryAignmentDTO> data = new List<DeliveryAignmentDTO>();
-            var res =  await _context.Deliveries.Include(x => x.DeliveryItems).OrderByDescending(x=>x.Id).ToListAsync();
+            var res =  await _context.Deliveries.Include(x => x.DeliveryItems).Include(x=>x.Transaction).OrderByDescending(x=>x.Id).ToListAsync();
 
-            foreach(var item in res)
+            //check if delivery has been paid for
+            if(res!= null)
             {
-                var deliveryitem = await _context.DeliveryItems.Where(x => x.DeliveryId == item.Id).FirstOrDefaultAsync();
-
-                var deliveryDto = new DeliveryAignmentDTO
+                foreach (var item in res)
                 {
-                    Id = item.Id,
-                    DeliveryNo = item.DeliveryNo,
-                    Email = item.Email,
-                    DeliveryStatus = deliveryitem != null ? deliveryitem.DeliveryStatus: DeliveryStatus.Canceled,
-                    TotalAmount = item.TotalAmount,
-                    DateCreated = item.DateCreated
-                };
-                data.Add(deliveryDto);
-            }
+                    var payment = await _context.Payments.Where(x => x.TransactionsId == item.transactionId).FirstOrDefaultAsync();
+                    if(payment!= null && payment.Paid)
+                    {
+                        int value = (int)payment.PaymentMethod;
+                        var paymentMethod = (PaymentMethod)value;
+                        var deliveryitem = await _context.DeliveryItems.Where(x => x.DeliveryId == item.Id).FirstOrDefaultAsync();
 
+                        var deliveryDto = new DeliveryAignmentDTO
+                        {
+                            Id = item.Id,
+                            DeliveryNo = item.DeliveryNo,
+                            Email = item.Email,
+                            DeliveryStatus = deliveryitem != null ? deliveryitem.DeliveryStatus : DeliveryStatus.Canceled,
+                            TotalAmount = item.TotalAmount,
+                            DateCreated = item.DateCreated,
+                            PaymentMethod = paymentMethod.ToString()
+                        };
+                        data.Add(deliveryDto);
+                    }
+                   
+                }
+            }
             return data;
         }
 
