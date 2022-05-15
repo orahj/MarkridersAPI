@@ -61,7 +61,7 @@ namespace Infrastructure.Data.Implementations
             var invoiceNo = _security.GetCode("inv").ToUpper();
             var slnNo = _security.GetCode("sln").ToUpper();
             var tranRef = _security.GetCode("Wal-").ToUpper();
-            Payment payment = new Payment(data.UserId,Core.Enum.PaymentMethod.Wallet,slnNo,invoiceNo,false, tranRef, data.TransactionId);
+            Payment payment = new Payment(data.UserId,Core.Enum.PaymentMethod.Wallet,slnNo,invoiceNo,true, tranRef, data.TransactionId);
             _unitOfWork.Repository<Payment>().Add(payment);
             
             //update wallet amount

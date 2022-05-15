@@ -356,8 +356,6 @@ namespace Infrastructure.Data.Implementations
                 foreach (var item in res)
                 {
                     var payment = await _context.Payments.Where(x => x.TransactionsId == item.transactionId).FirstOrDefaultAsync();
-                    if(payment!= null && payment.Paid)
-                    {
                         int value = (int)payment.PaymentMethod;
                         var paymentMethod = (PaymentMethod)value;
                         var deliveryitem = await _context.DeliveryItems.Where(x => x.DeliveryId == item.Id).FirstOrDefaultAsync();
@@ -373,8 +371,6 @@ namespace Infrastructure.Data.Implementations
                             PaymentMethod = paymentMethod.ToString()
                         };
                         data.Add(deliveryDto);
-                    }
-                   
                 }
             }
             return data;
